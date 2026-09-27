@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101722">
+  <meta name="description" content="Build, wire, and test digital logic circuits in a visual workbench.">
+  <title>Lumber Tycoon 2 Logic Simulator</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23101722'/%3E%3Cpath d='M12 32h13m14 0h13M25 19v26l14-13z' fill='none' stroke='%235de0c0' stroke-width='5' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="./styles.css?v=87">
+</head>
+<body>
+  <header class="topbar">
+    <p class="creator-note">This site and all its code were made entirely by ChatGPT.</p>
+    <div class="top-actions">
+      <label class="project-label">Project <input id="project-name" aria-label="Project name" value="Untitled circuit" maxlength="80"></label>
+      <button id="new-project" class="tool-button" title="Create a project in a new tab">New</button>
+      <button id="open-designs" class="tool-button" type="button" title="Explore built-in circuits">Circuit Explorer</button>
+      <button id="open-files" class="tool-button file-icon" type="button" title="Save / open circuit" aria-label="Save / open circuit" aria-haspopup="dialog" aria-controls="file-dialog"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h12l4 4v14H3V3h2zm2 0v6h9V3M7 21v-8h10v8"/></svg></button>
+    </div>
+  </header>
+  <div class="app">
+    <div id="parts-drawer" class="parts-drawer">
+    <aside id="components-panel" class="palette" aria-label="Parts palette">
+      <div class="side-heading"><h1>Components</h1><p>Click a part to place it</p></div>
+      <input id="part-search" class="search" type="search" placeholder="Search parts" aria-label="Search components">
+      <div id="parts-list"></div>
+    </aside>
+    <button id="toggle-components" class="components-tab" type="button" aria-controls="components-panel" aria-expanded="true" aria-label="Hide components" title="Hide components"><span aria-hidden="true">‹</span><span class="components-tab-label">Components</span></button>
+    </div>
+    <main class="workspace-wrap">
+      <div class="workspace-toolbar" aria-label="Workspace controls">
+        <div class="tool-group">
+          <button id="undo" class="tool-button" title="Undo (Ctrl+Z)">↶</button>
+          <button id="redo" class="tool-button" title="Redo (Ctrl+Y)">↷</button>
+          <button id="rotate" class="tool-button" title="Rotate selected component (R)">Rotate</button>
+          <button id="copy" class="tool-button" type="button" title="Copy selected parts and wires (Ctrl+C)">Copy</button>
+          <button id="paste" class="tool-button" type="button" title="Paste copied selection (Ctrl+V)">Paste</button>
+          <div id="wire-paint-control" class="wire-paint-control" hidden>
+            <button id="wire-paint" class="tool-button" type="button" aria-label="Change selected wire finish" aria-expanded="false" aria-controls="wire-paint-picker" title="Change selected wire finish">🎨</button>
+            <div id="wire-paint-picker" class="neon-color-picker" role="group" aria-label="Wire finish" hidden></div>
+          </div>
+          <button id="delete" class="tool-button" title="Delete selected (Delete)">Delete</button>
+          <button id="reset-inputs" class="tool-button" title="Reset levers and timed signals">Reset inputs</button>
+          <button id="run-toggle" class="tool-button simulation-toggle" title="Pause simulation" aria-label="Pause simulation"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h4v14H7zm6 0h4v14h-4z"/></svg></button>
+          <button id="step" class="tool-button" title="Advance one tick" hidden>Step 1 tick</button>
+        </div>
+        <div class="tool-group view-tools">
+          <button id="tidy-wires" class="tool-button" type="button" title="Separate overlapping wire runs while preserving connections. Undo restores the previous paths." aria-live="polite"><span class="tidy-progress" aria-hidden="true"></span><span class="tidy-label">Tidy wires</span></button>
+          <button id="grid-snap" class="tool-button" type="button" aria-pressed="false" title="Snap wire bends to 12-unit steps that line up with circuit ports. Circuit parts stay on the 48-unit game grid.">Wire snap: Off</button>
+        </div>
+      </div>
+      <div class="project-strip">
+        <div id="project-tabs" role="tablist" aria-label="Open circuit projects"></div>
+        <button id="add-project-tab" class="tool-button" type="button" aria-label="New project tab" title="New project tab">+</button>
+        <select id="closed-projects" aria-label="Reopen closed project" title="Closed projects are still saved in this browser" hidden></select>
+      </div>
+      <div id="project-panel" role="tabpanel">
+      <div id="viewport" role="application" aria-label="Circuit canvas" tabindex="0">
+        <div id="circuit-grid" class="canvas-grid" aria-hidden="true"></div>
+        <div id="wire-grid" class="canvas-grid" aria-hidden="true"></div>
+        <div id="world">
+          <svg id="wires" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"></svg>
+          <div id="nodes"></div>
+        </div>
+        <div id="selection-box" hidden></div>
+        <div id="empty-hint">Choose a component on the left to start building.<br><span>Select Wire or Neon Wire, then click anywhere to start<br>Left-drag parts · Shift-click or Shift-drag to select · Right-drag to pan</span></div>
+        <div id="wire-hint" hidden>Click to set wire points · click a port or wire to join · Enter leaves a free end · Esc cancels</div>
+      </div>
+      </div>
+    </main>
+  </div>
+  <footer class="statusbar"><span id="status">Ready</span><span id="save-status">Saved locally</span></footer>
+  <div id="wire-point-menu" class="wire-point-menu" role="menu" aria-label="Wire point actions" hidden></div>
+  <dialog id="file-dialog" class="file-dialog" aria-labelledby="file-dialog-title">
+    <input id="import-file" type="file" accept="application/json,.json" hidden>
+    <div class="file-dialog-head"><h2 id="file-dialog-title">Save / open circuit</h2><button id="close-files" class="tool-button" type="button" aria-label="Close file options" autofocus>✕</button></div>
+    <p>Your projects save automatically in this browser. Export a file for a backup or to use on another device.</p>
+    <div class="file-actions">
+      <section><h3>Export circuit</h3><p>Download the current circuit as a JSON file.</p><button id="export-project" class="tool-button" type="button">Export JSON</button></section>
+      <section><h3>Import circuit</h3><p>Open a JSON circuit file in a new project tab. Existing projects stay unchanged.</p><button id="import-project" class="tool-button" type="button">Choose file…</button></section>
+    </div>
+    <p id="file-message" role="status" aria-live="polite" hidden></p>
+  </dialog>
+  <dialog id="design-library" class="design-library" aria-labelledby="design-library-title">
+    <div class="design-library-head"><div class="explorer-heading"><span class="explorer-mark" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M6 7h8v8h12M6 25h8V15M26 7v18"/><circle cx="6" cy="7" r="2.5"/><circle cx="6" cy="25" r="2.5"/><circle cx="26" cy="7" r="2.5"/><circle cx="26" cy="25" r="2.5"/></svg></span><div><span class="explorer-eyebrow">THE CIRCUIT LIBRARY</span><h2 id="design-library-title">Circuit Explorer</h2></div></div><div class="explorer-head-actions"><span id="design-count" class="explorer-count"></span><button id="close-designs" class="tool-button explorer-close" type="button" aria-label="Close Circuit Explorer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div></div>
+    <div class="explorer-layout"><nav id="design-categories" class="design-categories" aria-label="Circuit categories"></nav><div id="design-list" class="design-list"></div></div>
+  </dialog>
+  <script type="module" src="./app-explorer.js?v=92"></script>
+</body>
+</html>
