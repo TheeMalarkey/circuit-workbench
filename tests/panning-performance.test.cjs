@@ -13,7 +13,7 @@ test('mounted signal rendering stays live during pan without rebuilding geometry
   assert.equal(r.run('updates'),1);assert.equal(r.run('cameraVisualDirty'),false);
 });
 test('signal painter updates existing wire elements only when their power changes',()=>{
-  const r=app();r.run("model=structuredClone(BUILT_IN_DESIGNS.find(d=>d.id==='wire-two-sources'));simulate(false);let writes=0;const path={classList:{toggle:()=>writes++}};paintedWires=[{id:'shared',paths:[path],active:false}];model.nodes[0].on=true;simulate(false);paintSignals();paintSignals();");
+  const r=app();r.run("model=structuredClone(BUILT_IN_DESIGNS.find(d=>d.id==='wire-two-sources'));simulate(false);let writes=0;const path={classList:{toggle:()=>writes++}};paintedWires=[{id:'shared',paths:[path],active:false,unstable:false}];model.nodes[0].on=true;simulate(false);paintSignals();paintSignals();");
   assert.equal(r.run('writes'),1);assert.equal(r.run('paintedWires[0].paths[0]===path'),true);
   r.run('model.nodes[0].on=false;simulate(false);paintSignals();');assert.equal(r.run('writes'),2);
 });

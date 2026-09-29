@@ -89,6 +89,8 @@ dialog{background:var(--panel);color:var(--text);border:1px solid var(--border-s
 #viewport.placing-wire { cursor: crosshair; }
 #empty-hint { line-height: 1.8; max-width: calc(100% - 40px); }
 #empty-hint span { font-size: 11px; }
+#empty-hint .touch-gesture-hint { display:none; }
+@media(pointer:coarse){#empty-hint .mouse-gesture-hint{display:none}#empty-hint .touch-gesture-hint{display:inline}}
 #wire-hint { max-width: calc(100% - 40px); color: #d3e8f4; border-color: #4d7189; }
 
 /* Keep names, states, ports, and physical controls in separate spaces. */
@@ -572,6 +574,10 @@ dialog{background:var(--panel);color:var(--text);border:1px solid var(--border-s
 .timing-input-light { position:absolute;left:22px;top:70px;width:18px;height:4px;background:#233139;box-shadow:0 1px #8d938066; }
 .timing-input-light.lit { background:#079ecc;box-shadow:0 0 3px #019cce66; }
 .wire-path.wire-active:not(.wire-neon) { stroke:#04b0df;filter:drop-shadow(0 0 2px #059ec855); }
+.node.unstable { outline:3px dashed #f1ae4a;outline-offset:3px; }
+.wire-path.wire-unstable,.wire-path.wire-neon.wire-unstable { stroke:#f1ae4a;stroke-dasharray:8 6;filter:none; }
+.wire-inspector{position:absolute;right:16px;bottom:16px;z-index:7;width:min(300px,calc(100% - 32px));max-height:min(230px,45%);overflow:auto;padding:11px 13px;background:#1b242df0;border:1px solid #647789;border-radius:8px;box-shadow:0 8px 24px #0008;color:#dce8e9;font-size:12px;line-height:1.45;pointer-events:auto}
+.wire-inspector strong{display:block;margin-bottom:5px;color:#f5f4ea;font-size:12px}.wire-inspector ul{margin:5px 0 0;padding-left:17px}.wire-inspector li{margin:2px 0}.wire-inspector .wire-on{color:#61d6ef}.wire-inspector .wire-unstable{color:#f1ae4a}.wire-inspector .wire-off{color:#aab7bd}.wire-inspector .wire-note{display:block;margin-top:7px;color:#aebcc3}
 .node .port.active { background:#06addd;border-color:#48c9e6; }
 .preview-node .timing-face { pointer-events:none; }
 .wire-endpoint { cursor:crosshair; }

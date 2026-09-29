@@ -140,9 +140,24 @@ test('converter digits use independent spatial segment outputs; unsupported 10â€
   const r=rig(),patterns=['1111110','0110000','1101101','1111001','0110011','1011011','1011111','1110000','1111111','1111011'];
   for(let n=0;n<16;n++)assert.equal(r.json(`evaluate('converter7',writeBits(${n}),{})`).map(Number).join(''),patterns[n]||'0000000');
 });
+test('fourteen-segment converter and stacked display match all 52 chart states',()=>{
+  const r=rig(),chart=require('./fixtures/fourteen-segment-chart.json');
+  assert.equal(chart.litByCode.length,52);
+  assert.equal(chart.segmentOrder.length,14);
+  r.run("model=structuredClone(BUILT_IN_DESIGNS.find(d=>d.id==='fourteen-segment-test'));");
+  for(let code=0;code<64;code++){
+    const expected=chart.litByCode[code]||[];
+    const actual=r.json(`evaluate('converter14',Array.from({length:6},(_,i)=>!!(${code}&(1<<i))),{})`);
+    assert.equal(actual.length,14);
+    assert.deepEqual(actual.flatMap((on,i)=>on?[i]:[]),expected,`converter code ${code}`);
+    r.run(`for(let i=0;i<6;i++)nodeBy('bit'+i).on=!!(${code}&(1<<i));simulate(false);`);
+    assert.deepEqual(r.json("values.get('display').in").flatMap((on,i)=>on?[i]:[]),expected,`stacked display code ${code}`);
+  }
+});
+
 test('fourteen-segment converter reproduces six photographed single-input states',()=>{
   const r=rig();
-  const observed={0:[],1:[1,2],2:[0,1,3,4,6,7],4:[1,2,5,6,7],8:[0,1,2,3,4,5,6,7],16:[0,4,5,6,7],32:[4,5,10,11]};
+  const observed={0:[],1:[1,2],2:[0,1,3,4,6,7],4:[1,2,5,6,7],8:[0,1,2,3,4,5,6,7],16:[0,4,5,6,7],32:[4,5,9,10]};
   for(const [code,lit] of Object.entries(observed)){
     const actual=r.json(`evaluate('converter14',Array.from({length:6},(_,i)=>!!(${code}&(1<<i))),{})`);
     assert.deepEqual(actual.flatMap((on,i)=>on?[i]:[]),lit,`reference screenshot input ${code}`);
@@ -170,13 +185,13 @@ test('in-game 14-segment input B+D displays slashed zero',()=>{
   r.run("model=structuredClone(BUILT_IN_DESIGNS.find(d=>d.id==='fourteen-segment-test'));for(let i=0;i<6;i++)nodeBy('bit'+i).on=[false,true,false,true,false,false][i];simulate(false)");
   assert.deepEqual(r.json("values.get('display').in").flatMap((on,i)=>on?[i]:[]),[0,1,2,3,4,5,9,10]);
 });
-test('in-game 14-segment input A+C+D+F displays dollar sign with lower center stroke',()=>{
+test('in-game 14-segment input A+C+D+F displays dollar sign with both center strokes',()=>{
   const r=rig();
   const inputs=[true,false,true,true,false,true];
   assert.equal(r.run('SEGMENT14_CODES[45]'),'$');
-  assert.deepEqual(r.json(`evaluate('converter14',${JSON.stringify(inputs)},{})`).flatMap((on,i)=>on?[i]:[]),[0,2,3,5,6,7,13]);
+  assert.deepEqual(r.json(`evaluate('converter14',${JSON.stringify(inputs)},{})`).flatMap((on,i)=>on?[i]:[]),[0,2,3,5,6,7,12,13]);
   r.run("model=structuredClone(BUILT_IN_DESIGNS.find(d=>d.id==='fourteen-segment-test'));for(let i=0;i<6;i++)nodeBy('bit'+i).on=[true,false,true,true,false,true][i];simulate(false)");
-  assert.deepEqual(r.json("values.get('display').in").flatMap((on,i)=>on?[i]:[]),[0,2,3,5,6,7,13]);
+  assert.deepEqual(r.json("values.get('display').in").flatMap((on,i)=>on?[i]:[]),[0,2,3,5,6,7,12,13]);
 });
 test('in-game 14-segment input A+B+D+F displays five-stroke question mark',()=>{
   const r=rig();

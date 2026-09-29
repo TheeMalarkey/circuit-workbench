@@ -25,7 +25,7 @@ const PARTS = {
   binaryBCD: { name:'Binary to BCD Converter',group:'Arithmetic',inputs:['8','4','2','1'],outputs:['T8','T4','T2','T1','U8','U4','U2','U1'],width:384,height:96,description:'8 × 2 grid cells. Four binary bits → tens and units. Matches the pictured 14 example.' },
   converter7: { name:'7 Segment Converter',group:'Arithmetic',inputs:['D8','C4','B2','A1'],outputs:['Top','Upper right','Lower right','Bottom','Lower left','Upper left','Middle'],width:96,height:192,description:'Bottom inputs A, B, C, D have weights 1, 2, 4, 8, left to right. Place a display directly over this converter, with matching rotation, to connect all seven segments. 10–15 blank provisionally.' },
   display7: { name:'Seven Segment Display',group:'Outputs',inputs:['Top','Upper right','Lower right','Bottom','Lower left','Upper left','Middle'],outputs:[],width:96,height:192,description:'Red segments. Place directly over a 7 Segment Converter, with matching rotation: no connecting wires needed. Drag the display away to separate them. Can also be wired independently.' },
-  converter14: { name:'14 Segment Converter',group:'Arithmetic',inputs:['A1','B2','C4','D8','E16','F32'],outputs:Array.from({length:14},(_,i)=>`Segment ${i+1}`),width:96,height:192,description:'2 × 4 cells. Six inputs run down the left edge. Place the matching display directly over this converter, with matching rotation, to connect all fourteen segments. Six photographed input states are calibrated; other glyph shapes remain provisional.' },
+  converter14: { name:'14 Segment Converter',group:'Arithmetic',inputs:['A1','B2','C4','D8','E16','F32'],outputs:Array.from({length:14},(_,i)=>`Segment ${i+1}`),width:96,height:192,description:'2 × 4 cells. Six inputs run down the left edge. Place the matching display directly over this converter, with matching rotation, to connect all fourteen segments. Codes 0–51 follow the supplied in-game character chart; 52–63 remain blank.' },
   display14: { name:'Fourteen Segment Display',group:'Outputs',inputs:Array.from({length:14},(_,i)=>`Segment ${i+1}`),outputs:[],width:96,height:192,description:'Fixed red segments, modeled after the seven-segment display. Place directly over a matching converter with the same rotation, or wire its fourteen segment contacts independently.' },
 };
 const SEGMENT_DIGITS=['abcdef','bc','abdeg','abcdg','bcfg','acdfg','acdefg','abc','abcdefg','abcdfg'];
@@ -33,19 +33,20 @@ const SEGMENT_NAMES='abcdefg';
 const SEGMENT_POSITIONS=[[48,24],[76,60],[76,132],[48,168],[20,132],[20,60],[48,96]];
 const SEGMENT14_NAMES=['a','b','c','d','e','f','g1','g2','h','i','j','k','l','m'];
 const SEGMENT14_POSITIONS=[[48,21],[77,58],[77,132],[48,170],[19,132],[19,58],[35,96],[61,96],[36,58],[61,58],[36,132],[61,132],[48,58],[48,132]];
-// The character order follows the wiki chart. Six isolated input states are
-// calibrated from reference screenshots; in-game photos also confirm 10=0, 22=L and 45=$.
+// Segment masks transcribed from the supplied in-game chart, codes 0–51.
+// h/i are upper-left/upper-right diagonals; j/k are lower-left/lower-right;
+// l/m are upper/lower center verticals. Codes 52–63 remain blank.
 const SEGMENT14_GLYPHS={
-  '0':'a b c d e f i j','1':'b c','2':'a b g1 g2 e d','3':'a b c d g1 g2','4':'f g1 g2 b c',
+  '0':'a b c d e f i j','1':'b c','2':'a b g1 g2 e d','3':'a b c d g2','4':'f g1 g2 b c',
   '5':'a f g1 g2 c d','6':'a f e d c g1 g2','7':'a b c','8':'a b c d e f g1 g2','9':'a b c d f g1 g2',
-  A:'a b c e f g1 g2',B:'a b c d g1 g2 l m',C:'a d e f',D:'a b c d l m',E:'a d e f g1 g2',
-  F:'a e f g1 g2',G:'a c d e f g2',H:'b c e f g1 g2',I:'a d i l',J:'b c d e',
+  A:'a b c e f g1 g2',B:'a b c d g2 l m',C:'a d e f',D:'a b c d l m',E:'a d e f g1 g2',
+  F:'a e f g1 g2',G:'a c d e f g2',H:'b c e f g1 g2',I:'a d l m',J:'b c d e',
   K:'e f g1 i k',L:'d e f',M:'b c e f h i',N:'b c e f h k',O:'a b c d e f',
   P:'a b e f g1 g2',Q:'a b c d e f k',R:'a b e f g1 g2 k',S:'a f g1 g2 c d',
-  T:'a l m',U:'b c d e f',V:'e f j k',W:'b c e f j k',X:'h i j k',Y:'h i m',Z:'a d i j',
-  '+':'g1 g2 l m','-':'g1 g2','/':'i j','\\':'h k','(':'e f',')':'b c','?':'a b f g2 m',
-  '*':'h i j k g1 g2','$':'a f g1 g2 c d m','&':'a f e d g1 g2 k','%':'h i j k',
-  '^':'h i','"':'f b',"'":'b','`':'f'
+  T:'a l m',U:'b c d e f',V:'e f i j',W:'b c e f j k',X:'h i j k',Y:'h i m',Z:'a d i j',
+  '+':'g1 g2 l m','-':'g1 g2','/':'i j','\\':'h k','(':'i k',')':'h j','?':'a b f g2 m',
+  '*':'h i j k g1 g2 l m','$':'a f g1 g2 c d l m','&':'a d g1 g2 h k','%':'g1 g2 i j',
+  '^':'j k','"':'b l',"'":'l','`':'h'
 };
 const SEGMENT14_SYMBOLS=['+','-','/','\\','(',')','?','*','$','&','%','^','"',"'",'`'];
 const SEGMENT14_CODES=Array.from({length:64},(_,code)=>code>=1&&code<=9?String(code):code===10?'0':code>=11&&code<=36?String.fromCharCode(65+code-11):code>=37&&code<=51?SEGMENT14_SYMBOLS[code-37]:'');
@@ -135,7 +136,7 @@ BUILT_IN_DESIGNS.push({id:'stacked-seven',name:'Stacked seven-segment display',d
 for(const count of [2,4])BUILT_IN_DESIGNS.push({id:`buffer-${count}-shift`,name:`Buffer ${count} · shift both ways`,detail:'Upper button inserts 1 from the top. Lower button inserts 0 from the bottom. Right wires show stored bits, top to bottom.',check:'Matches observed bidirectional shifts. The expelled bit pulses through the opposite row; exact pulse duration and simultaneous writes remain provisional.',nodes:[designNode('one','button',48,0),designNode('memory',`buffer${count}`,0,192),designNode('zero','button',0,288+48*count,{rotation:180})],wires:[designWire('one-feed',{node:'one',side:'out',index:0},{node:'memory',side:'in',index:1}),designWire('zero-feed',{node:'zero',side:'out',index:0},{node:'memory',side:'in',index:2}),...Array.from({length:count},(_,i)=>designWire('out-'+i,{node:'memory',side:'out',index:i},{x:288,y:216+48*i},[],'neon','Green'))]});
 for(const count of [8,16])BUILT_IN_DESIGNS.push({id:`selector-${count}-test`,name:`Selector ${count}x · cycle outputs`,detail:'Press the wired button or the orange button built into the selector to advance. The numbered top controls enable or disable channels.',check:'Starts on output 1, skips disabled outputs, and toggles with one enabled channel.',nodes:[designNode('source','button',0,48),designNode('selector',`selector${count}`,240,0)],wires:[designWire('feed',{node:'source',side:'out',index:0},{node:'selector',side:'in',index:0},[{x:144,y:144},{x:144,y:48}]),...Array.from({length:count},(_,index)=>designWire('out-'+index,{node:'selector',side:'out',index},{x:264+index*48,y:288},[],'neon','Green'))]});
 BUILT_IN_DESIGNS.push({id:'add-three-test',name:'Add 3 · four-bit test',detail:'The four levers below supply 8, 4, 2, and 1 from left to right. The four glowing output wires above show the result in the same order.',check:'0–4 pass through; 5–12 add 3; 13–15 wrap to 0–2 on four output bits. Compare these boundary values in-game.',nodes:[designNode('add3','add3',240,240),...Array.from({length:4},(_,i)=>designNode('bit'+i,'lever',240+i*48,480,{rotation:180}))],wires:[...Array.from({length:4},(_,i)=>designWire('input-'+i,{node:'bit'+i,side:'out',index:0},{node:'add3',side:'in',index:i})),...Array.from({length:4},(_,i)=>designWire('output-'+i,{node:'add3',side:'out',index:i},{x:264+i*48,y:48},[],'neon','Green'))]});
-BUILT_IN_DESIGNS.push({id:'fourteen-segment-test',name:'Fourteen segments · six-input test',detail:'Six levers feed A through F, top to bottom. The display sits directly over the converter with no wires between them.',check:'Single-input 1, 2, 4, 8, F, and V match reference screenshots. In-game 10=0, 22=L and 45=$. Other glyph shapes remain provisional.',nodes:[designNode('converter','converter14',288,240),designNode('display','display14',288,240),...Array.from({length:6},(_,i)=>designNode('bit'+i,'lever',0,i*96))],wires:Array.from({length:6},(_,i)=>designWire('bit-wire'+i,{node:'bit'+i,side:'out',index:0},{node:'converter',side:'in',index:i}))});
+BUILT_IN_DESIGNS.push({id:'fourteen-segment-test',name:'Fourteen segments · six-input test',detail:'Six levers feed A through F, top to bottom. The display sits directly over the converter with no wires between them.',check:'Codes 0–51 follow the supplied in-game chart: blank, 1–9, slashed zero, A–Z, and symbols. The six levers have weights 1, 2, 4, 8, 16, and 32. Codes 52–63 remain blank.',nodes:[designNode('converter','converter14',288,240),designNode('display','display14',288,240),...Array.from({length:6},(_,i)=>designNode('bit'+i,'lever',0,i*96))],wires:Array.from({length:6},(_,i)=>designWire('bit-wire'+i,{node:'bit'+i,side:'out',index:0},{node:'converter',side:'in',index:i}))});
 function calculatorBench(a,b){
   const nodes=[],edges=[],wires=[];
   const add=(id,type,x,y,label,extra={})=>nodes.push(designNode(id,type,x,y,{label,...extra}));
@@ -564,7 +565,8 @@ let wireStyle = 'normal', wireColor = 'White';
 let wirePlacementArmed = false;
 let gridSnap = (()=>{try{return localStorage.getItem(`${STORE_KEY}-grid-snap`) === 'true';}catch{return false;}})();
 let lastWireClick = null;
-let view = { x: 120, y: 100, scale: 1 }, history = [], future = [], running = true, tick = 0, values = new Map();
+let view = { x: 120, y: 100, scale: 1 }, history = [], future = [], timingHistory=[], futureTiming=[], running = true, tick = 0, values = new Map();
+const activeTouches = new Map();
 let buttonPulses = new Map(), circuitBuffers = new Map(), latchStates = new Map();
 let simulationMs=0;
 const TICK_MS=200;
@@ -579,13 +581,39 @@ let projects=[],activeProjectId=null;
 function rememberProject(){
   const project=projects.find(p=>p.id===activeProjectId);if(!project)return;
   project.model=model;project.view={...view};project.running=running;
-  project.session={history,future,values,buttonPulses,circuitBuffers,latchStates,memoryStates,tick,simulationMs,
+  project.session={history,future,timingHistory,futureTiming,values,buttonPulses,circuitBuffers,latchStates,memoryStates,tick,simulationMs,
     selected,selectedNodes:new Set(selectedNodes),selectedWires:new Set(selectedWires)};
+}
+function savedTimingSession(session,projectModel){
+  if(!session)return null;
+  const ids=new Set(projectModel.nodes.map(n=>n.id));
+  const entries=map=>[...(map instanceof Map?map:[])].filter(([id])=>ids.has(id));
+  return {simulationMs:session.simulationMs||0,tick:session.tick||0,
+    buttonPulses:entries(session.buttonPulses),circuitBuffers:entries(session.circuitBuffers),
+    latchStates:entries(session.latchStates),memoryStates:entries(session.memoryStates)};
+}
+function loadTimingSession(raw,projectModel){
+  if(!raw||!Number.isFinite(raw.simulationMs)||raw.simulationMs<0)return null;
+  const byId=new Map(projectModel.nodes.map(n=>[n.id,n]));
+  const time=value=>Number.isFinite(value)&&value>=0;
+  const entries=(value,valid)=>new Map(Array.isArray(value)?value.filter(pair=>Array.isArray(pair)&&pair.length===2&&byId.has(pair[0])&&valid(byId.get(pair[0]),pair[1])):[]);
+  const timingState=(node,state)=>['delay','sustain'].includes(node.type)&&state&&typeof state.input==='boolean'&&typeof state.output==='boolean'&&time(state.holdUntil)
+    &&Array.isArray(state.events)&&state.events.every(event=>event&&time(event.at)&&typeof event.on==='boolean')
+    &&Array.isArray(state.pulses)&&state.pulses.every(pulse=>pulse&&time(pulse.start)&&(pulse.end===null||time(pulse.end)));
+  const latchState=(node,state)=>node.type==='srLatch'&&state&&[0,1].includes(state.selected)&&(state.previous===null||[0,1].includes(state.previous))
+    &&time(state.offAt)&&Array.isArray(state.input)&&state.input.length===2&&state.input.every(on=>typeof on==='boolean')
+    &&typeof state.contested==='boolean'&&typeof state.linked==='boolean'&&typeof state.linkedChanged==='boolean'&&time(state.releaseUntil);
+  return {history:[],future:[],timingHistory:[],futureTiming:[],values:new Map(),
+    buttonPulses:entries(raw.buttonPulses,(node,until)=>node.type==='button'&&time(until)),
+    circuitBuffers:entries(raw.circuitBuffers,timingState),latchStates:entries(raw.latchStates,latchState),
+    memoryStates:entries(raw.memoryStates,(node,state)=>isBuffer(node)&&state&&typeof state.old==='boolean'&&Number.isInteger(state.port)&&state.port>=0&&state.port<4&&time(state.until)),
+    tick:raw.simulationMs/TICK_MS,simulationMs:raw.simulationMs,
+    selected:null,selectedNodes:new Set(),selectedWires:new Set()};
 }
 function persistProjects(){
   clearTimeout(saveTimer);rememberProject();
   try{
-    localStorage.setItem(PROJECTS_KEY,JSON.stringify({version:1,activeProjectId,projects:projects.map(p=>({id:p.id,model:p.model,view:p.view,running:p.running,open:p.open}))}));
+    localStorage.setItem(PROJECTS_KEY,JSON.stringify({version:1,activeProjectId,projects:projects.map(p=>({id:p.id,model:p.model,view:p.view,running:p.running,open:p.open,session:savedTimingSession(p.session,p.model)}))}));
     els['save-status'].textContent='Projects saved in this browser';return true;
   }catch{els['save-status'].textContent='Could not save — export your projects for backup';return false;}
 }
@@ -599,7 +627,7 @@ function initializeProjects(){
       projects=stored.projects.flatMap(p=>{
         if(!p||typeof p.id!=='string'||ids.has(p.id))return [];
         const data=normalize(p.model);if(!valid(data))return [];ids.add(p.id);
-        return [{id:p.id,model:data,open:p.open!==false,running:p.running!==false,
+        return [{id:p.id,model:data,open:p.open!==false,running:p.running!==false,session:loadTimingSession(p.session,data),
           view:p.view&&[p.view.x,p.view.y,p.view.scale].every(Number.isFinite)&&p.view.scale>0?{x:p.view.x,y:p.view.y,scale:Math.max(.2,Math.min(3,p.view.scale))}:{x:120,y:100,scale:1}}];
       });
       activeProjectId=projects.find(p=>p.id===stored.activeProjectId&&p.open)?.id||projects.find(p=>p.open)?.id||null;
@@ -611,9 +639,9 @@ function initializeProjects(){
 }
 function restoreProject(project){
   activeProjectId=project.id;project.open=true;model=project.model;view={...project.view};running=project.running;
-  history=[];future=[];resetTiming();clearSelection();
-  if(project.session){const s=project.session;history=s.history;future=s.future;values=s.values;buttonPulses=s.buttonPulses;circuitBuffers=s.circuitBuffers;latchStates=s.latchStates;memoryStates=s.memoryStates||new Map();tick=s.tick;simulationMs=s.simulationMs;selected=s.selected;selectedNodes=new Set(s.selectedNodes);selectedWires=new Set(s.selectedWires);}
-  draft=null;wirePlacementArmed=false;gesture=null;cameraVisualDirty=false;lastWireClick=null;paintOpen=false;
+  history=[];future=[];timingHistory=[];futureTiming=[];resetTiming();clearSelection();
+  if(project.session){const s=project.session;history=s.history;future=s.future;timingHistory=s.timingHistory||[];futureTiming=s.futureTiming||[];values=s.values;buttonPulses=s.buttonPulses;circuitBuffers=s.circuitBuffers;latchStates=s.latchStates;memoryStates=s.memoryStates||new Map();tick=s.tick;simulationMs=s.simulationMs;selected=s.selected;selectedNodes=new Set(s.selectedNodes);selectedWires=new Set(s.selectedWires);}
+  draft=null;wirePlacementArmed=false;gesture=null;activeTouches.clear();cameraVisualDirty=false;lastWireClick=null;paintOpen=false;
   els['wire-hint'].hidden=true;$('selection-box').hidden=true;els.viewport.classList.remove('panning');
   updatePlaybackControls();render();simulate(false);renderProjectTabs();refreshWireToolUI();
 }
@@ -778,6 +806,7 @@ function normalize(data) {
   for(const n of migrated.nodes){
     if(n?.type==='clock')n.type='delay';
     if(n?.type==='delay'||n?.type==='sustain')n.delay=Number.isInteger(n.delay)?Math.max(1,Math.min(12,n.delay)):1;
+    if(n?.type==='srLatch')n.latchSelected=n.latchSelected===1?1:0;
     if(n?.type==='button')n.on=false;
     if(isMemory(n)){
       n.memoryInput=Array.from({length:PARTS[n.type].inputs.length},(_,i)=>n.memoryInput?.[i]===true);
@@ -852,7 +881,15 @@ function save() {
   clearTimeout(saveTimer); els['save-status'].textContent = 'Saving…';
   saveTimer = setTimeout(persistProjects,250);
 }
-function checkpoint() { history.push(clone(model)); if (history.length > 80) history.shift(); future = []; updateHistory(); }
+function timingSnapshot(){return structuredClone({values,buttonPulses,circuitBuffers,latchStates,memoryStates,tick,simulationMs});}
+function restoreTiming(snapshot){
+  if(!snapshot){resetTiming();return;}
+  const ids=new Set(model.nodes.map(n=>n.id)),keep=map=>new Map([...map].filter(([id])=>ids.has(id)));
+  values=keep(snapshot.values);buttonPulses=keep(snapshot.buttonPulses);circuitBuffers=keep(snapshot.circuitBuffers);
+  latchStates=keep(snapshot.latchStates);memoryStates=keep(snapshot.memoryStates);
+  tick=snapshot.tick;simulationMs=snapshot.simulationMs;memoryDirty=false;
+}
+function checkpoint() { history.push(clone(model));timingHistory.push(timingSnapshot());if (history.length > 80){history.shift();timingHistory.shift();} future = [];futureTiming=[];updateHistory(); }
 function updateHistory() { $('undo').disabled = history.length === 0; $('redo').disabled = future.length === 0; }
 function changed() { save(); render(); simulate(false); }
 function setStatus(message) { els.status.textContent = message; }
@@ -986,11 +1023,17 @@ function wireNetworks(){
     const a=entries[i].points,b=entries[j].points;
     if(touches(a[0],entries[j])||touches(a.at(-1),entries[j])||touches(b[0],entries[i])||touches(b.at(-1),entries[i]))join(i,j);
   }
+  const ports={in:[],out:[]};
+  for(const n of model.nodes)for(const side of ['in','out'])PARTS[n.type][side==='in'?'inputs':'outputs'].forEach((_,index)=>ports[side].push({node:n.id,index,point:portPosition(n,side,index)}));
+  // A component socket is a real junction even when both wires pass through
+  // its interior. A crossing without a socket or wire end remains isolated.
+  for(const port of [...ports.in,...ports.out]){
+    let first=-1;
+    entries.forEach((entry,i)=>{if(!touches(port.point,entry))return;if(first<0)first=i;else join(first,i);});
+  }
   const groups=new Map(),byWire=new Map();
   entries.forEach((entry,i)=>{const id=root(i);byWire.set(entry.wire.id,id);if(!groups.has(id))groups.set(id,[]);groups.get(id).push(entry);});
   const inputs=new Map(),outputs=new Map();
-  const ports={in:[],out:[]};
-  for(const n of model.nodes)for(const side of ['in','out'])PARTS[n.type][side==='in'?'inputs':'outputs'].forEach((_,index)=>ports[side].push({node:n.id,index,point:portPosition(n,side,index)}));
   for(const [id,group] of groups){
     inputs.set(id,ports.in.filter(p=>group.some(e=>touches(p.point,e))));
     outputs.set(id,ports.out.filter(p=>group.some(e=>touches(p.point,e))));
@@ -999,13 +1042,56 @@ function wireNetworks(){
   networkCache={model,key,network};return network;
 }
 function networkSignals(outputs){
-  const network=wireNetworks(),powered=new Map(),drivers=new Map();
+  const network=wireNetworks(),powered=new Map(),drivers=new Map(),outputDrivers=new Map();
   for(const [id,ports] of network.outputs){
-    const sources=new Set(ports.filter(p=>outputs.get(p.node)?.[p.index]).map(p=>p.node));
+    const livePorts=ports.filter(p=>outputs.get(p.node)?.[p.index]);
+    const realSources=new Set(livePorts.map(p=>p.node));
+    const sources=new Set(realSources);
     for(const p of network.inputs.get(id)||[])if(bufferPulsePort(p.node)===p.index)sources.add(p.node);
-    drivers.set(id,sources);powered.set(id,sources.size>0);
+    outputDrivers.set(id,realSources);drivers.set(id,sources);powered.set(id,sources.size>0);
   }
-  return {...network,powered,drivers};
+  return {...network,powered,drivers,outputDrivers};
+}
+function unstableNetworks(network,signalValues=values){
+  return new Set([...network.outputs].filter(([,ports])=>ports.some(p=>signalValues.get(p.node)?.unstable)).map(([id])=>id));
+}
+function wirePowerDetails(wireId,network=networkSignals(new Map(model.nodes.map(n=>[n.id,values.get(n.id)?.out||[]])))){
+  const net=network.byWire.get(wireId);if(net===undefined)return null;
+  const inputs=network.inputs.get(net)||[];
+  const outputs=(network.outputs.get(net)||[]).map(p=>{
+    const node=nodeBy(p.node);
+    return {node:p.node,label:node.label||`${PARTS[node.type].name} (${node.x}, ${node.y})`,port:PARTS[node.type].outputs[p.index]||`Output ${p.index+1}`,
+      active:!!values.get(p.node)?.out?.[p.index],unstable:!!values.get(p.node)?.unstable,feedback:inputs.some(input=>input.node===p.node)};
+  });
+  const forwarded=inputs.filter(p=>bufferPulsePort(p.node)===p.index).map(p=>{
+    const node=nodeBy(p.node);
+    return {node:p.node,label:node.label||`${PARTS[node.type].name} (${node.x}, ${node.y})`,port:'Forwarded pulse',active:true,unstable:false,feedback:false};
+  });
+  return {powered:!!network.powered.get(net),unstable:unstableNetworks(network).has(net),wires:network.groups.get(net)?.length||1,
+    sources:[...outputs,...forwarded]};
+}
+function renderWireInspector(network){
+  const inspector=$('wire-inspector');
+  const wireId=selectionSize()===1&&selected?.kind==='wire'?selected.id:null;
+  const details=wireId===null?null:wirePowerDetails(wireId,network);
+  inspector.hidden=!details;
+  if(!details){inspector._key=null;return;}
+  const key=JSON.stringify([wireId,details]);if(inspector._key===key)return;inspector._key=key;
+  inspector.replaceChildren();
+  const title=document.createElement('strong');
+  const status=details.unstable?'Unstable':details.powered?'On':'Off';
+  title.textContent=`Selected wire · ${status}`;title.className=details.unstable?'wire-unstable':details.powered?'wire-on':'wire-off';inspector.append(title);
+  const summary=document.createElement('span');
+  summary.textContent=details.unstable?'Feedback has no settled value.':details.powered?'Any active source on this connected network keeps the wire on.':'No connected source is active.';
+  inspector.append(summary);
+  if(details.sources.length){
+    const list=document.createElement('ul');
+    for(const source of details.sources){const item=document.createElement('li');item.textContent=`${source.unstable?'Unsettled':source.active?'On':'Off'} · ${source.label} · ${source.port}${source.feedback?' · feeds itself':''}`;list.append(item);}
+    inspector.append(list);
+  }else{
+    const note=document.createElement('span');note.className='wire-note';note.textContent='No circuit output is connected to this wire.';inspector.append(note);
+  }
+  if(details.wires>1){const note=document.createElement('span');note.className='wire-note';note.textContent=`${details.wires} wire sections share this signal.`;inspector.append(note);}
 }
 function simplifyRoutedPath(points){
   const clean=[];
@@ -1269,13 +1355,13 @@ function addNode(type) {
 }
 function nodeElement(n,contacts) {
   const part = PARTS[n.type], el = document.createElement('div');
-  el.className = `node ${n.type}-part` + (compactNode(n) ? ' compact' : '') + (selectedNodes.has(n.id) ? ' selected' : '');
+  el.className = `node ${n.type}-part` + (compactNode(n) ? ' compact' : '') + (selectedNodes.has(n.id) ? ' selected' : '') + (values.get(n.id)?.unstable?' unstable':'');
   if(stackedPartner(n))el.classList.add('stacked');
   const layout=layoutPosition(n);
   el.dataset.id = n.id; el.style.left = layout.x + 'px'; el.style.top = layout.y + 'px'; el.style.transform = `rotate(${n.rotation || 0}deg)`;
   el.style.width=nodeWidth(n)+'px'; el.style.height=nodeHeight(n)+'px';
   const lit = !!(['display7','display14'].includes(n.type)?values.get(n.id)?.in:values.get(n.id)?.out)?.some(Boolean);
-  el.setAttribute('role','group');el.setAttribute('aria-label',`${part.name} ${lit?'on':'off'}`);
+  el.setAttribute('role','group');el.setAttribute('aria-label',`${part.name} ${values.get(n.id)?.unstable?'unstable':lit?'on':'off'}`);
   if(n.label){const label=document.createElement('span');label.className='circuit-label';label.textContent=n.label;el.append(label);}
   if(n.type==='display7'){
     el.append(segmentFace(n));
@@ -1368,7 +1454,8 @@ function paintSignals(){
     const entry=paintedNodes.get(n.id);if(!entry)continue;
     const key=signalPaintKey(n);if(entry.key===key)continue;entry.key=key;
     const el=entry.el,v=values.get(n.id),display=n.type==='display7'||n.type==='display14';
-    el.setAttribute('aria-label',`${PARTS[n.type].name} ${(display?v?.in:v?.out)?.some(Boolean)?'on':'off'}`);
+    el.setAttribute('aria-label',`${PARTS[n.type].name} ${v?.unstable?'unstable':(display?v?.in:v?.out)?.some(Boolean)?'on':'off'}`);
+    el.classList.toggle('unstable',!!v?.unstable);
     for(const port of el.querySelectorAll('.port'))port.classList.toggle('active',!!v?.[port.dataset.side]?.[Number(port.dataset.index)]);
     el.querySelectorAll('.segment,.segment14').forEach((segment,i)=>segment.classList.toggle('lit',!!v?.in?.[i]));
     el.querySelectorAll('.selector-channel').forEach((channel,i)=>channel.classList.toggle('lit',!!v?.out?.[i]));
@@ -1376,9 +1463,14 @@ function paintSignals(){
     const control=el.querySelector('.node-control');
     if(control){const on=n.type==='button'?(buttonPulses.get(n.id)||0)>simulationMs:!!n.on;control.classList.toggle('on',on);control.setAttribute('aria-pressed',String(on));if(n.type==='lever')control.setAttribute('aria-label',on?'Turn lever off':'Turn lever on');}
   }
-  const network=networkSignals(new Map(model.nodes.map(n=>[n.id,values.get(n.id)?.out||[]])));
-  for(const entry of paintedWires){const active=!!network.powered.get(network.byWire.get(entry.id));if(active!==entry.active){entry.active=active;for(const path of entry.paths)path.classList.toggle('wire-active',active);}}
+  const network=networkSignals(new Map(model.nodes.map(n=>[n.id,values.get(n.id)?.out||[]]))),unstable=unstableNetworks(network);
+  for(const entry of paintedWires){
+    const net=network.byWire.get(entry.id),active=!!network.powered.get(net),uncertain=unstable.has(net);
+    if(active!==entry.active){entry.active=active;for(const path of entry.paths)path.classList.toggle('wire-active',active);}
+    if(uncertain!==entry.unstable){entry.unstable=uncertain;for(const path of entry.paths)path.classList.toggle('wire-unstable',uncertain);}
+  }
   for(const entry of paintedJunctions){const active=!!network.powered.get(entry.net);if(active!==entry.active){entry.active=active;entry.el.classList.toggle('powered',active);}}
+  renderWireInspector(network);
   paintTimingFaces();
 }
 function updateRenderWindow(force=false){
@@ -1483,22 +1575,22 @@ function renderWires() {
   let handles=$('wire-end-handles');
   if(!handles){handles=document.createElementNS('http://www.w3.org/2000/svg','svg');handles.id='wire-end-handles';els.wires.parentElement.append(handles);}
   handles.replaceChildren();
-  const network=networkSignals(new Map(model.nodes.map(n=>[n.id,values.get(n.id)?.out||[]])));
+  const network=networkSignals(new Map(model.nodes.map(n=>[n.id,values.get(n.id)?.out||[]]))),unstable=unstableNetworks(network);
   const drawing=wireDrawing(network);
   const overpasses=[],wireControls=[];
   for (const w of model.wires) {
     if(draft?.editing===w.id)continue;
     const points = wireEnds(w); if (!points) continue;
     const group = document.createElementNS('http://www.w3.org/2000/svg','g');
-    const active = !!network.powered.get(network.byWire.get(w.id));
-    const entry={id:w.id,active,points,group,paths:[]};paintedWires.push(entry);
+    const net=network.byWire.get(w.id),active=!!network.powered.get(net),uncertain=unstable.has(net);
+    const entry={id:w.id,active,unstable:uncertain,points,group,paths:[]};paintedWires.push(entry);
     const layers=drawing.layers.get(w.id);
     for(const layer of ['under','over']){
       if(!layers?.[layer])continue;
       const path=document.createElementNS('http://www.w3.org/2000/svg','path');
       path.style.setProperty('--neon-color',neonColor(w).hex);
       path.setAttribute('d',layers[layer]);path.dataset.id=w.id;path.dataset.layer=layer;
-      path.setAttribute('class',`wire-path${w.style==='neon'?' wire-neon':''}${active ? ' wire-active' : ''}${selectedWires.has(w.id) ? ' selected' : ''}`);
+      path.setAttribute('class',`wire-path${w.style==='neon'?' wire-neon':''}${active ? ' wire-active' : ''}${uncertain?' wire-unstable':''}${selectedWires.has(w.id) ? ' selected' : ''}`);
       entry.paths.push(path);
       if(layer==='over')overpasses.push(path);else els.wires.append(path);
     }
@@ -1536,7 +1628,7 @@ function renderWires() {
         if(draft){finishWireAt(w[end].node?{...w[end],side:w[end].side||(end==='from'?'out':'in')}:w[end]);return;}
         if(selectedWires.has(w.id)&&!e.shiftKey){e.preventDefault();openWirePointMenu(w.id,{end},e.clientX,e.clientY);return;}
         if(!e.shiftKey){startWireAt({x:w[end].x,y:w[end].y},w);return;}
-        gesture={type:'endpoint',id:w.id,end,start:screenToWorld(e.clientX,e.clientY),orig:{...p},before:clone(model),moved:false,toggleOnClick:true};els.viewport.setPointerCapture(e.pointerId);
+        gesture={type:'endpoint',pointerId:e.pointerId,id:w.id,end,start:screenToWorld(e.clientX,e.clientY),orig:{...p},before:clone(model),beforeTiming:timingSnapshot(),moved:false,toggleOnClick:true};els.viewport.setPointerCapture(e.pointerId);
       });(selectedWires.has(w.id)?handles:group).append(circle);
     }
     wireControls.push({group,selected:selectedWires.has(w.id)});
@@ -1566,7 +1658,7 @@ function renderSelection() {
   $('delete').disabled=!selectionSize();$('copy').disabled=!selectionSize();$('paste').disabled=!copied;
   $('rotate').disabled=!(selectionSize()===1&&selected?.kind==='node');
   for(const id of ['rotate','copy','paste','delete'])$(id).hidden=$(id).disabled;
-  renderNodes(); renderWires(); renderWirePaint();
+  renderNodes(); renderWires(); renderWirePaint(); renderWireInspector();
   paintedModel=model;updateRenderWindow(true);
 }
 function render() { applyView(); renderSelection(); els['project-name'].value=model.name; updateHistory(); if(projects.length){rememberProject();renderProjectTabs();} }
@@ -1754,7 +1846,7 @@ function movingWireIds(nodeIds=selectedNodes,wireIds=selectedWires){
 }
 function startGroupDrag(e){
   const wireIds=movingWireIds(),nodeIds=new Set(selectedNodes);
-  gesture={type:'group',start:screenToWorld(e.clientX,e.clientY),before:clone(model),moved:false,
+  gesture={type:'group',pointerId:e.pointerId,start:screenToWorld(e.clientX,e.clientY),before:clone(model),beforeTiming:timingSnapshot(),moved:false,
     nodes:new Map(model.nodes.filter(n=>nodeIds.has(n.id)).map(n=>[n.id,{x:n.x,y:n.y}])),
     wires:new Map(model.wires.filter(w=>wireIds.has(w.id)).map(w=>[w.id,{from:clone(w.from),to:clone(w.to),points:clone(w.points),ends:wireEnds(w)}]))};
   els.viewport.setPointerCapture(e.pointerId);
@@ -1817,20 +1909,72 @@ function startNodeDrag(e,id) {
 function startWaypointDrag(e,id,index) {
   if (e.button !== 0) return;
   e.stopPropagation();selectOnly('wire',id);selected.pointIndex=index;const w=model.wires.find(x=>x.id===id),start=screenToWorld(e.clientX,e.clientY);
-  gesture={type:'point',id,index,start,orig:{...w.points[index]},before:clone(model),moved:false,menuOnClick:true};els.viewport.setPointerCapture(e.pointerId);
+  gesture={type:'point',pointerId:e.pointerId,id,index,start,orig:{...w.points[index]},before:clone(model),beforeTiming:timingSnapshot(),moved:false,menuOnClick:true};els.viewport.setPointerCapture(e.pointerId);
   renderSelection();setStatus('Click for bend actions · drag to move');
+}
+function cameraGesture(g=gesture){return g?.type==='pan'||g?.type==='pinch';}
+function finishCameraGesture(){
+  applyView();els.viewport.classList.remove('panning');
+  if(cameraVisualDirty)renderSelection();else paintTimingFaces();
+  cameraVisualDirty=false;
+}
+function updatePinchGesture(){
+  if(gesture?.type!=='pinch')return;
+  const [a,b]=gesture.ids.map(id=>activeTouches.get(id));
+  if(!a||!b)return;
+  const middle={x:(a.x+b.x)/2,y:(a.y+b.y)/2};
+  const distance=Math.max(1,Math.hypot(b.x-a.x,b.y-a.y));
+  view.scale=Math.max(.08,Math.min(2.5,gesture.startScale*distance/gesture.startDistance));
+  view.x=middle.x-gesture.rect.left-gesture.world.x*view.scale;
+  view.y=middle.y-gesture.rect.top-gesture.world.y*view.scale;
+  scheduleCamera();
+}
+function beginPinchGesture(){
+  const [[firstId,a],[secondId,b]]=[...activeTouches.entries()];
+  const interrupted=gesture;gesture=null;
+  if(interrupted?.before&&interrupted.moved){model=interrupted.before;renderSelection();}
+  if(interrupted?.type==='marquee'){$('selection-box').hidden=true;selectedNodes=interrupted.baseNodes;selectedWires=interrupted.baseWires;selected=primarySelection();renderSelection();}
+  const middle={x:(a.x+b.x)/2,y:(a.y+b.y)/2},rect=els.viewport.getBoundingClientRect();
+  gesture={type:'pinch',ids:[firstId,secondId],startScale:view.scale,startDistance:Math.max(1,Math.hypot(b.x-a.x,b.y-a.y)),
+    world:{x:(middle.x-rect.left-view.x)/view.scale,y:(middle.y-rect.top-view.y)/view.scale},rect:{left:rect.left,top:rect.top}};
+  els.viewport.classList.add('panning');
+  els.viewport.setPointerCapture(firstId);els.viewport.setPointerCapture(secondId);
+}
+function onTouchPointerDown(e){
+  if(e.pointerType!=='touch')return;
+  activeTouches.set(e.pointerId,{x:e.clientX,y:e.clientY,eligible:!e.target.closest('button')&&!draft&&!wirePlacementArmed});
+  if(activeTouches.size<2)return;
+  e.preventDefault();e.stopPropagation();
+  if(activeTouches.size===2&&[...activeTouches.values()].every(point=>point.eligible)&&!draft&&!wirePlacementArmed)beginPinchGesture();
 }
 function onCanvasPointerDown(e) {
   if(e.button!==0 || e.target.closest('.node') || e.target.closest('.wire-hit') || e.target.closest('.waypoint'))return;
   if(draft?.editing||draft?.junction){finishWireAt(snapPoint(screenToWorld(e.clientX,e.clientY)));}
   else if(draft){draft.points.push(snapPoint(screenToWorld(e.clientX,e.clientY)));renderWires();}
-  else if(e.shiftKey){gesture={type:'marquee',start:screenToWorld(e.clientX,e.clientY),startClient:{x:e.clientX,y:e.clientY},baseNodes:new Set(selectedNodes),baseWires:new Set(selectedWires),moved:false};els.viewport.setPointerCapture(e.pointerId);}
+  else if(e.shiftKey){gesture={type:'marquee',pointerId:e.pointerId,start:screenToWorld(e.clientX,e.clientY),startClient:{x:e.clientX,y:e.clientY},baseNodes:new Set(selectedNodes),baseWires:new Set(selectedWires),moved:false};els.viewport.setPointerCapture(e.pointerId);}
   else if(wirePlacementArmed){clearSelection();startWireAt(snapPoint(screenToWorld(e.clientX,e.clientY)));}
-  else {clearSelection();renderSelection();}
+  else {
+    const hadSelection=selectionSize()>0||wirePointMenu||paintOpen;
+    clearSelection();if(hadSelection||e.pointerType!=='touch')renderSelection();
+    if(e.pointerType==='touch'){
+      gesture={type:'pan',pointerId:e.pointerId,start:{x:e.clientX,y:e.clientY},orig:{x:view.x,y:view.y},moved:false};
+      els.viewport.setPointerCapture(e.pointerId);
+    }
+  }
 }
 function onPointerMove(e) {
+  if(e.pointerType==='touch'){
+    const point=activeTouches.get(e.pointerId);
+    if(point){point.x=e.clientX;point.y=e.clientY;}
+    if(gesture?.type==='pinch'){if(gesture.ids.includes(e.pointerId))updatePinchGesture();return;}
+    if(activeTouches.size>1)return;
+  }
+  if(gesture?.type==='pinch')return;
+  if(gesture?.pointerId!==undefined&&e.pointerId!==undefined&&gesture.pointerId!==e.pointerId)return;
   // Panning needs no canvas bounds read, circuit rebuild, or wire hit testing.
   if(gesture?.type==='pan'){
+    if(e.pointerType==='touch'&&!gesture.moved&&Math.hypot(e.clientX-gesture.start.x,e.clientY-gesture.start.y)<3)return;
+    gesture.moved=true;
     view.x=gesture.orig.x+e.clientX-gesture.start.x;view.y=gesture.orig.y+e.clientY-gesture.start.y;
     scheduleCamera();return;
   }
@@ -1852,13 +1996,31 @@ function onPointerMove(e) {
   renderSelection();
 }
 function onPointerUp(e) {
+  if(e.pointerType==='touch'&&activeTouches.has(e.pointerId)){
+    const point=activeTouches.get(e.pointerId);point.x=e.clientX;point.y=e.clientY;
+    if(gesture?.type==='pinch'){
+      const inPinch=gesture.ids.includes(e.pointerId);
+      if(inPinch&&e.type!=='pointercancel')updatePinchGesture();
+      activeTouches.delete(e.pointerId);
+      if(inPinch){
+        const remainingId=gesture.ids.find(id=>activeTouches.has(id));
+        if(remainingId!==undefined){
+          const remaining=activeTouches.get(remainingId);
+          gesture={type:'pan',pointerId:remainingId,start:{x:remaining.x,y:remaining.y},orig:{x:view.x,y:view.y},moved:false};
+        }else{gesture=null;finishCameraGesture();}
+      }
+      return;
+    }
+    activeTouches.delete(e.pointerId);
+  }
+  if(gesture?.type==='pinch')return;
   if(!gesture)return;
+  if(gesture.pointerId!==undefined&&e.pointerId!==undefined&&gesture.pointerId!==e.pointerId)return;
   if(gesture.type==='point'&&gesture.menuOnClick&&!gesture.moved&&e.type!=='pointercancel'){
     const {id,index}=gesture;gesture=null;openWirePointMenu(id,{index},e.clientX,e.clientY);return;
   }
   if(gesture.type==='pan'){
-    if(e.type!=='pointercancel'){view.x=gesture.orig.x+e.clientX-gesture.start.x;view.y=gesture.orig.y+e.clientY-gesture.start.y;}
-    applyView();
+    if(e.type!=='pointercancel'&&(e.pointerType!=='touch'||gesture.moved)){view.x=gesture.orig.x+e.clientX-gesture.start.x;view.y=gesture.orig.y+e.clientY-gesture.start.y;}
   }
   if(gesture.type==='wire') {
     gesture=null;
@@ -1882,14 +2044,10 @@ function onPointerUp(e) {
     setStatus(`${selectionSize()} item${selectionSize()===1?'':'s'} selected`);
   }
   if(gesture.type==='group'&&gesture.moved)lastWireClick=null;
-  if(gesture.moved&&gesture.type!=='pan'&&gesture.type!=='marquee'&&JSON.stringify(model)!==JSON.stringify(gesture.before)) { history.push(gesture.before);future=[]; save();render();simulate(false);if(gesture.type==='group')setStatus('Moved selection'); }
-  els.viewport.classList.remove('panning');
-  const wasPanning=gesture.type==='pan';
+  if(gesture.moved&&gesture.type!=='pan'&&gesture.type!=='marquee'&&JSON.stringify(model)!==JSON.stringify(gesture.before)) { history.push(gesture.before);timingHistory.push(gesture.beforeTiming||timingSnapshot());future=[];futureTiming=[]; save();render();simulate(false);if(gesture.type==='group')setStatus('Moved selection'); }
+  const wasPanning=cameraGesture();
   gesture=null;
-  if(wasPanning){
-    if(cameraVisualDirty)renderSelection();else paintTimingFaces();
-    cameraVisualDirty=false;
-  }
+  if(wasPanning)finishCameraGesture();else els.viewport.classList.remove('panning');
 }
 function pressButton(node) {buttonPulses.set(node.id,simulationMs+350);simulate(false);}
 function cycleTiming(node) {
@@ -1927,6 +2085,7 @@ function paintTimingFaces(){
   }
 }
 function resetTiming() {buttonPulses=new Map();circuitBuffers=new Map();latchStates=new Map();memoryStates=new Map();values=new Map();tick=0;simulationMs=0;}
+function resetInputs(){checkpoint();model.nodes.forEach(n=>{if(n.type==='lever')n.on=false;if(n.type==='srLatch')n.latchSelected=0;});resetTiming();changed();}
 function isBuffer(n){return ['buffer1','buffer2','buffer4'].includes(n?.type);}
 function bufferBits(n){return n.type==='buffer1'?[n.bit===true]:Array.from({length:PARTS[n.type].outputs.length},(_,i)=>n.bits?.[i]===true);}
 function isSelector(n){return ['selector4','selector8','selector16'].includes(n?.type);}
@@ -1948,24 +2107,44 @@ function toggleSelectorOutput(n,index){
 }
 function latchOutputs(id){
   const state=latchStates.get(id);
-  if(!state)return [true,false];
+  if(!state)return [nodeBy(id)?.latchSelected!==1,nodeBy(id)?.latchSelected===1];
   return [0,1].map(side=>state.contested||state.releaseUntil>simulationMs||(state.linked&&!state.linkedChanged)||state.selected===side||(state.previous===side&&state.offAt>simulationMs));
 }
-function linkedLatchSourceSide(latch,current){
-  const sides=new Set();
-  for(const source of model.nodes){
-    if(source.id===latch.id)continue;
-    for(let index=0;index<PARTS[source.type].outputs.length;index++){
-      if(!current.get(source.id)?.out[index]||values.get(source.id)?.out?.[index])continue;
-      for(const wire of model.wires){
-        for(const [a,aDefault,b,bDefault] of [[wire.from,'out',wire.to,'in'],[wire.to,'in',wire.from,'out']]){
-          if(a.node===source.id&&(a.side||aDefault)==='out'&&a.index===index&&
-             b.node===latch.id&&(b.side||bDefault)==='in')sides.add(b.index);
-        }
-      }
+function wirePathDistances(group,source,targets,contacts){
+  const key=p=>`${Math.round(p.x*1000)/1000},${Math.round(p.y*1000)/1000}`;
+  const candidates=new Map();
+  for(const p of [...group.flatMap(e=>e.points),...contacts])candidates.set(key(p),p);
+  const graph=new Map([...candidates.keys()].map(id=>[id,[]]));
+  for(const {points} of group)for(let i=1;i<points.length;i++){
+    const a=points[i-1],b=points[i],along=[...candidates.values()].filter(p=>onSegment(p,a,b)).sort((p,q)=>Math.hypot(p.x-a.x,p.y-a.y)-Math.hypot(q.x-a.x,q.y-a.y));
+    for(let j=1;j<along.length;j++){
+      const p=along[j-1],q=along[j],distance=Math.hypot(p.x-q.x,p.y-q.y);
+      graph.get(key(p)).push([key(q),distance]);graph.get(key(q)).push([key(p),distance]);
     }
   }
-  return sides.size===1?[...sides][0]:null;
+  const distances=new Map([[key(source),0]]),visited=new Set();
+  while(true){
+    let current=null,best=Infinity;
+    for(const [id,distance] of distances)if(!visited.has(id)&&distance<best){current=id;best=distance;}
+    if(current===null)break;
+    visited.add(current);
+    for(const [id,length] of graph.get(current)||[])if(best+length<(distances.get(id)??Infinity))distances.set(id,best+length);
+  }
+  return targets.map(p=>distances.get(key(p))??Infinity);
+}
+function linkedLatchSourceSide(latch,current){
+  const network=wireNetworks();
+  for(const [id,inputs] of network.inputs){
+    const sides=[0,1].map(index=>inputs.find(p=>p.node===latch.id&&p.index===index));
+    if(sides.some(p=>!p))continue;
+    const active=(network.outputs.get(id)||[]).filter(p=>p.node!==latch.id&&current.get(p.node)?.out?.[p.index]);
+    if(active.length!==1)return null;
+    const contacts=[...inputs,...network.outputs.get(id)].map(p=>p.point);
+    const [top,bottom]=wirePathDistances(network.groups.get(id),active[0].point,sides.map(p=>p.point),contacts);
+    if(!Number.isFinite(top)||!Number.isFinite(bottom)||Math.abs(top-bottom)<.5)return null;
+    return top<bottom?0:1;
+  }
+  return null;
 }
 function evaluate(type,input,node) {
   const a=!!input[0],b=!!input[1];
@@ -1976,18 +2155,39 @@ function evaluate(type,input,node) {
   if(type==='converter14'){const code=input.reduce((value,on,i)=>value+(on?2**i:0),0),lit=new Set((SEGMENT14_GLYPHS[SEGMENT14_CODES[code]]||'').split(' '));return SEGMENT14_NAMES.map(segment=>lit.has(segment));}
   switch(type){case 'delay':case 'sustain':return [a];case 'and':return [a&&b];case 'or':return [a||b];case 'xor':return [a!==b];case 'nand':return [!(a&&b)];case 'nor':return [!(a||b)];case 'xnor':return [a===b];case 'inverter':return [!a];default:return [];}
 }
+function markUnstableSignals(next,cycle){
+  const unstable=new Set();
+  for(const n of model.nodes){
+    const first=JSON.stringify(cycle[0].get(n.id));
+    if(cycle.some(state=>JSON.stringify(state.get(n.id))!==first))unstable.add(n.id);
+  }
+  const network=wireNetworks();let added=true;
+  while(added){
+    added=false;
+    for(const [id,drivers] of network.outputs)if(drivers.some(p=>unstable.has(p.node)))
+      for(const p of network.inputs.get(id)||[])if(!unstable.has(p.node)){unstable.add(p.node);added=true;}
+    for(const contact of network.contacts)if(unstable.has(contact.from.node)&&!unstable.has(contact.to.node)){
+      unstable.add(contact.to.node);added=true;
+    }
+  }
+  for(const id of unstable)next.get(id).unstable=true;
+  return next;
+}
 function resolveSignals() {
   const next=new Map(model.nodes.map(n=>[n.id,{
     in:PARTS[n.type].inputs.map(()=>false),drive:PARTS[n.type].inputs.map(()=>false),
-    out:n.type==='button'?[(buttonPulses.get(n.id)||0)>simulationMs]:n.type==='lever'?[!!n.on]:n.type==='srLatch'?latchOutputs(n.id):isMemory(n)?memoryOutputs(n):PARTS[n.type].outputs.map(()=>!!circuitBuffers.get(n.id)?.output)
+    out:n.type==='button'?[(buttonPulses.get(n.id)||0)>simulationMs]:n.type==='lever'?[!!n.on]:n.type==='srLatch'?latchOutputs(n.id):isMemory(n)?memoryOutputs(n):PARTS[n.type].outputs.map((_,i)=>n.type==='delay'||n.type==='sustain'?!!circuitBuffers.get(n.id)?.output:!values.get(n.id)?.unstable&&!!values.get(n.id)?.out?.[i])
   }]));
+  const snapshot=()=>new Map(model.nodes.map(n=>[n.id,[...next.get(n.id).out]]));
+  const signature=()=>model.nodes.map(n=>next.get(n.id).out.map(Number).join('')).join('|');
+  const states=[snapshot()],seen=new Map([[signature(),0]]);
   // Ordinary gates and Sustain propagate without artificial gate latency.
   for(let pass=0;pass<=model.nodes.length;pass++){
     for(const entry of next.values()){entry.in.fill(false);entry.drive.fill(false);}
     const network=networkSignals(new Map(model.nodes.map(n=>[n.id,next.get(n.id).out])));
     for(const [id,ports] of network.inputs){
       if(!network.powered.get(id))continue;
-      for(const p of ports){const entry=next.get(p.node);entry.in[p.index]=true;entry.drive[p.index]=[...network.drivers.get(id)].some(source=>source!==p.node);}
+      for(const p of ports){const entry=next.get(p.node);entry.in[p.index]=true;entry.drive[p.index]=network.outputDrivers.get(id).size>0||[...network.drivers.get(id)].some(source=>source!==p.node);}
     }
     for(const contact of network.contacts){
       const target=next.get(contact.to.node)?.in;
@@ -2005,15 +2205,41 @@ function resolveSignals() {
       if(output.some((on,index)=>entry.out[index]!==on)||output.length!==entry.out.length){entry.out=output;changed=true;}
     }
     if(!changed)break;
+    const key=signature();
+    if(seen.has(key))return markUnstableSignals(next,states.slice(seen.get(key)));
+    seen.set(key,states.length);states.push(snapshot());
   }
+  if(states.length>model.nodes.length+1)return markUnstableSignals(next,states);
   return next;
 }
 function settleTiming(){
   // Record edges at the moment they occur; sampling once per tick would shorten
   // pulses and make the delay depend on when the player clicked.
   for(let pass=0;pass<=model.nodes.length;pass++){
-    const current=resolveSignals();let changed=false;
+    let current=resolveSignals(),changed=false,timingChanged=false;
+    // Timers establish their hold/event state before edge-triggered memory
+    // samples the circuit. Otherwise releasing Sustain exposes a false pulse.
+    for(const n of model.nodes)if(n.type==='delay'||n.type==='sustain'){
+      const state=circuitBuffers.get(n.id)||{input:false,output:false,events:[],pulses:[],holdUntil:0};
+      circuitBuffers.set(n.id,state);
+      if(n.type==='sustain'){
+        const output=!!current.get(n.id).out[0];
+        if(state.output!==output){state.output=output;changed=timingChanged=true;}
+      }
+      const input=!!current.get(n.id).in[0];
+      if(input===state.input)continue;
+      state.input=input;changed=timingChanged=true;
+      if(n.type==='delay'){
+        state.events.push({at:simulationMs+n.delay*TICK_MS,on:input});
+        if(input)state.pulses.push({start:simulationMs,end:null});
+        else {const pulse=state.pulses.at(-1);if(pulse)pulse.end=simulationMs;}
+      }else{
+        state.holdUntil=input?0:simulationMs+(n.delay===1?0:n.delay*TICK_MS);
+      }
+    }
+    if(timingChanged)current=resolveSignals();
     for(const n of model.nodes)if(isMemory(n)){
+      if(current.get(n.id).unstable)continue;
       const raw=isBuffer(n)?current.get(n.id).drive:current.get(n.id).in;
       const input=raw.map(Boolean),previous=n.memoryInput?.length===input.length?n.memoryInput:input.map(()=>false);
       if(input.every((value,i)=>value===previous[i]))continue;
@@ -2028,7 +2254,8 @@ function settleTiming(){
       }
     }
     for(const n of model.nodes)if(n.type==='srLatch'){
-      const state=latchStates.get(n.id)||{selected:0,previous:null,offAt:0,input:[false,false],contested:false,linked:false,linkedChanged:false,releaseUntil:0};
+      if(current.get(n.id).unstable)continue;
+      const state=latchStates.get(n.id)||{selected:n.latchSelected===1?1:0,previous:null,offAt:0,input:[false,false],contested:false,linked:false,linkedChanged:false,releaseUntil:0};
       latchStates.set(n.id,state);
       const input=current.get(n.id).in.map(Boolean);
       if(input.every((on,side)=>on===state.input[side]))continue;
@@ -2051,31 +2278,7 @@ function settleTiming(){
         state.contested=false;state.linked=false;
       }
       state.input=input;changed=true;
-    }
-    for(const n of model.nodes)if(n.type==='delay'||n.type==='sustain'){
-      const state=circuitBuffers.get(n.id)||{input:false,output:false,events:[],pulses:[],holdUntil:0};
-      circuitBuffers.set(n.id,state);
-      if(n.type==='sustain'){
-        // Keep the last powered state as the starting point of the next solve.
-        // A wire from Out back to In is a stable powered loop after one pulse;
-        // starting every solve from false made it collapse and retrigger.
-        const output=!!current.get(n.id).out[0];
-        if(state.output!==output){state.output=output;changed=true;}
-      }
-      const input=!!current.get(n.id).in[0];
-      if(input===state.input)continue;
-      state.input=input;changed=true;
-      if(n.type==='delay'){
-        // Recorded delay: 200 ms per setting. The first lamp lights after one
-        // tick, so the final lamp and the output still start together.
-        state.events.push({at:simulationMs+n.delay*TICK_MS,on:input});
-        if(input)state.pulses.push({start:simulationMs,end:null});
-        else {const pulse=state.pulses.at(-1);if(pulse)pulse.end=simulationMs;}
-      }else{
-        // Recording: the lowest setting has no visible extra hold. At 12 the
-        // short pulse holds 2.4 s; the longer recording shows ~0.2 s of variation.
-        state.holdUntil=input?0:simulationMs+(n.delay===1?0:n.delay*TICK_MS);
-      }
+      if(n.latchSelected!==state.selected){n.latchSelected=state.selected;memoryDirty=true;}
     }
     if(!changed)return current;
   }
@@ -2112,11 +2315,12 @@ function simulate(advance=true,elapsed=TICK_MS) {
   try{
   if(advance)advanceTiming(elapsed);
   const next=settleTiming();
+  if(next.size&&[...next.values()].some(v=>v.unstable)&&![...values.values()].some(v=>v.unstable))setStatus('Unstable feedback detected · amber wires have no settled value');
   const visualChanged=model.nodes.some(n=>JSON.stringify(values.get(n.id))!==JSON.stringify(next.get(n.id)));
   values=next;
   // Keep the simulation clock running, but do not rebuild the canvas mid-pan.
   if(paintedModel===model){if(visualChanged)paintSignals();else paintTimingFaces();}
-  else if(gesture?.type==='pan')cameraVisualDirty ||= visualChanged;
+  else if(cameraGesture())cameraVisualDirty ||= visualChanged;
   else if(visualChanged)renderSelection();else paintTimingFaces();
   if(memoryDirty){memoryDirty=false;save();}
   }finally{simulationNetwork=null;}
@@ -2140,8 +2344,8 @@ function removeSelected(wholeSelection=false) {
   model.wires=model.wires.filter(w=>!selectedWires.has(w.id)&&!selectedNodes.has(w.from.node)&&!selectedNodes.has(w.to.node));
   clearSelection();changed();setStatus('Selection deleted');
 }
-function undo() {if(!history.length)return;future.push(clone(model));model=history.pop();resetTiming();clearSelection();draft=null;els['wire-hint'].hidden=true;save();render();simulate(false);refreshWireToolUI();}
-function redo() {if(!future.length)return;history.push(clone(model));model=future.pop();resetTiming();clearSelection();draft=null;els['wire-hint'].hidden=true;save();render();simulate(false);refreshWireToolUI();}
+function undo() {if(!history.length)return;future.push(clone(model));futureTiming.push(timingSnapshot());model=history.pop();restoreTiming(timingHistory.pop());clearSelection();draft=null;els['wire-hint'].hidden=true;save();render();simulate(false);refreshWireToolUI();}
+function redo() {if(!future.length)return;history.push(clone(model));timingHistory.push(timingSnapshot());model=future.pop();restoreTiming(futureTiming.pop());clearSelection();draft=null;els['wire-hint'].hidden=true;save();render();simulate(false);refreshWireToolUI();}
 function copySelection(){
   if(!selectionSize())return;
   const nodeIds=new Set(selectedNodes),wireIds=movingWireIds();
@@ -2207,7 +2411,7 @@ function addDesign(design){
   const copy=designCopy(design),empty=model.nodes.length===0&&model.wires.length===0;
   const next={name:empty?design.name:model.name,nodes:[...model.nodes,...copy.nodes],wires:[...model.wires,...copy.wires]};
   if(!valid(next)){setStatus('This design could not be added');return;}
-  checkpoint();model=next;resetTiming();clearSelection();draft=null;els['wire-hint'].hidden=true;changed();
+  checkpoint();model=next;clearSelection();draft=null;els['wire-hint'].hidden=true;changed();
   $('design-library').close();
   const game=copy.nodes.find(n=>n.arcade?.role==='run');
   if(game)focusPong(game.arcade.group);
@@ -2370,15 +2574,19 @@ function bind() {
   $('grid-snap').onclick=()=>{gridSnap=!gridSnap;updateGridSnap();try{localStorage.setItem(`${STORE_KEY}-grid-snap`,String(gridSnap));}catch{}setStatus(`Wire snap ${gridSnap?'on':'off'}`);};
   els.viewport.addEventListener('wheel',e=>{e.preventDefault();zoomAt(e.deltaY<0?1.1:1/1.1,e.clientX,e.clientY);},{passive:false});
   els.viewport.addEventListener('contextmenu',e=>e.preventDefault());
+  els.viewport.addEventListener('pointerdown',onTouchPointerDown,true);
   els.viewport.addEventListener('pointerdown',e=>{
     if(e.button!==2)return;
     e.preventDefault();e.stopPropagation();
-    gesture={type:'pan',start:{x:e.clientX,y:e.clientY},orig:{x:view.x,y:view.y},moved:false};
+    gesture={type:'pan',pointerId:e.pointerId,start:{x:e.clientX,y:e.clientY},orig:{x:view.x,y:view.y},moved:false};
     els.viewport.classList.add('panning');els.viewport.setPointerCapture(e.pointerId);
   },true);
   els.viewport.addEventListener('pointerdown',onCanvasPointerDown);
   els.viewport.addEventListener('pointermove',onPointerMove);els.viewport.addEventListener('pointerup',onPointerUp);els.viewport.addEventListener('pointercancel',onPointerUp);
-  $('reset-inputs').onclick=()=>{checkpoint();model.nodes.forEach(n=>{if(n.type==='lever')n.on=false;});resetTiming();changed();};
+  // Controls need not capture the pointer, so also forget touches released outside the canvas.
+  document.addEventListener('pointerup',e=>{if(e.pointerType==='touch')activeTouches.delete(e.pointerId);});
+  document.addEventListener('pointercancel',e=>{if(e.pointerType==='touch')activeTouches.delete(e.pointerId);});
+  $('reset-inputs').onclick=resetInputs;
   $('run-toggle').onclick=()=>{running=!running;updatePlaybackControls();setStatus(running?'Simulation playing':'Simulation paused');};
   $('step').onclick=()=>{if(!running)simulate(true);};
   document.addEventListener('keydown',e=>{const typing=/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName);if(typing||document.activeElement?.closest('.project-strip'))return;

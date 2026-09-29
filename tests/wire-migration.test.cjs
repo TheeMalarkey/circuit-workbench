@@ -6,7 +6,7 @@ const source = fs.readFileSync(require('node:path').join(__dirname, '../dist/app
 function app() {
   let nextId=0;
   const context = vm.createContext({structuredClone, crypto:{randomUUID:()=> `generated-${++nextId}`}, document:{getElementById:()=>({})}, localStorage:{getItem:()=>null}});
-  vm.runInContext(source + '\n globalThis.api={normalize,valid,portPosition,footprint,canPlace,findCircuitSpot,touchingPorts}; renderSelection=()=>{};',context);
+  vm.runInContext(source + '\n globalThis.api={normalize,valid,portPosition,footprint,canPlace,findCircuitSpot,touchingPorts}; renderSelection=()=>{};save=()=>{};',context);
   return context;
 }
 const node = (id,type,extra={}) => ({id,type,x:20,y:40,rotation:0,...extra});

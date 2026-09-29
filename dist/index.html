@@ -7,7 +7,7 @@
   <meta name="description" content="Build, wire, and test digital logic circuits in a visual workbench.">
   <title>Lumber Tycoon 2 Logic Simulator</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23101722'/%3E%3Cpath d='M12 32h13m14 0h13M25 19v26l14-13z' fill='none' stroke='%235de0c0' stroke-width='5' stroke-linejoin='round'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="./styles.css?v=87">
+  <link rel="stylesheet" href="./styles.css?v=89">
 </head>
 <body>
   <header class="topbar">
@@ -64,7 +64,8 @@
           <div id="nodes"></div>
         </div>
         <div id="selection-box" hidden></div>
-        <div id="empty-hint">Choose a component on the left to start building.<br><span>Select Wire or Neon Wire, then click anywhere to start<br>Left-drag parts · Shift-click or Shift-drag to select · Right-drag to pan</span></div>
+        <aside id="wire-inspector" class="wire-inspector" aria-label="Selected wire signal" aria-live="polite" hidden></aside>
+        <div id="empty-hint">Choose a component on the left to start building.<br><span>Select Wire or Neon Wire, then click anywhere to start<br><span class="mouse-gesture-hint">Left-drag parts · Shift-click or Shift-drag to select · Right-drag to pan</span><span class="touch-gesture-hint">Drag parts to move · drag empty space to pan · pinch to zoom</span></span></div>
         <div id="wire-hint" hidden>Click to set wire points · click a port or wire to join · Enter leaves a free end · Esc cancels</div>
       </div>
       </div>
@@ -86,6 +87,6 @@
     <div class="design-library-head"><div class="explorer-heading"><span class="explorer-mark" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M6 7h8v8h12M6 25h8V15M26 7v18"/><circle cx="6" cy="7" r="2.5"/><circle cx="6" cy="25" r="2.5"/><circle cx="26" cy="7" r="2.5"/><circle cx="26" cy="25" r="2.5"/></svg></span><div><span class="explorer-eyebrow">THE CIRCUIT LIBRARY</span><h2 id="design-library-title">Circuit Explorer</h2></div></div><div class="explorer-head-actions"><span id="design-count" class="explorer-count"></span><button id="close-designs" class="tool-button explorer-close" type="button" aria-label="Close Circuit Explorer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div></div>
     <div class="explorer-layout"><nav id="design-categories" class="design-categories" aria-label="Circuit categories"></nav><div id="design-list" class="design-list"></div></div>
   </dialog>
-  <script type="module" src="./app-explorer.js?v=92"></script>
+  <script type="module" src="./app-explorer.js?v=95"></script>
 </body>
 </html>
