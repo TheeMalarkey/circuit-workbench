@@ -1,15 +1,23 @@
 const {test}=require('node:test');
 const assert=require('node:assert/strict');
 const fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
+const {createHash}=require('node:crypto');
 const source=fs.readFileSync(path.join(__dirname,'../dist/app.js'),'utf8').split('bind();updateGridSnap();')[0];
 const ctx=vm.createContext({document:{getElementById:()=>({})},localStorage:{getItem:()=>null},structuredClone,crypto:require('node:crypto').webcrypto});
 vm.runInContext(source+';renderSelection=()=>{};paintTimingFaces=()=>{};save=()=>{};',ctx);
 const run=code=>vm.runInContext(code,ctx);
-test('all calculator and counter routes avoid every board interior',()=>{
+test('calculator and counter routes avoid board interiors except their own face-contact leads',()=>{
   assert.equal(run(`BUILT_IN_DESIGNS.filter(d=>d.id.startsWith('calculator-')||d.id==='counter-0-15').every(d=>{
     model=structuredClone(d);return model.wires.every(w=>{const p=wireEnds(w);return p.slice(1).every((b,i)=>{
       const a=p[i];if(a.x!==b.x&&a.y!==b.y)return false;
-      return model.nodes.every(n=>{const f=footprint(n);return !(a.x===b.x?a.x>n.x&&a.x<n.x+f.w&&Math.max(a.y,b.y)>n.y&&Math.min(a.y,b.y)<n.y+f.h:a.y>n.y&&a.y<n.y+f.h&&Math.max(a.x,b.x)>n.x&&Math.min(a.x,b.x)<n.x+f.w);});
+      return model.nodes.every(n=>{const f=footprint(n);
+        // Segment sockets are on the display face. Its first/last contact
+        // lead must leave that one board; no foreign board gets an exemption.
+        if(['converter7','display7'].includes(n.type)&&[[w.from,i===0],[w.to,i===p.length-2]].some(([end,edge])=>{
+          if(!edge||end.node!==n.id)return false;const q=portPosition(n,end.side,end.index);
+          return q.x>n.x&&q.x<n.x+f.w&&q.y>n.y&&q.y<n.y+f.h;
+        }))return true;
+        return !(a.x===b.x?a.x>n.x&&a.x<n.x+f.w&&Math.max(a.y,b.y)>n.y&&Math.min(a.y,b.y)<n.y+f.h:a.y>n.y&&a.y<n.y+f.h&&Math.max(a.x,b.x)>n.x&&Math.min(a.x,b.x)<n.x+f.w);});
     });});
   })`),true);
 });
@@ -60,6 +68,12 @@ test('counter and calculator separate all parallel wires, not only different sig
   for(const id of ['counter-0-15','calculator-0-0']){
     run(`model=structuredClone(BUILT_IN_DESIGNS.find(d=>d.id==='${id}'));`);
     assertSeparateLanes();
+  }
+});
+test('all practical explorer circuits separate parallel wires into readable lanes',()=>{
+  for(const id of run('PRACTICAL_DESIGNS.map(d=>d.id)')){
+    run(`model=structuredClone(PRACTICAL_DESIGNS.find(d=>d.id==='${id}'));`);
+    try{assertSeparateLanes();}catch(error){error.message+=` in ${id}`;throw error;}
   }
 });
 test('a manually joined branch stays anchored without changing wire identity',()=>{
@@ -180,6 +194,18 @@ test('crossings get bridges, actual branches get dots, and geometry is cached',(
   assert.doesNotMatch(run("geometry.paths.get('h')"),/ Q /);
   assert.equal(run('geometry.junctions.some(p=>p.x===50&&p.y===50)'),true);
 });
+test('large circuit crossing paths and junctions match their approved layout geometry',()=>{
+  const expected={
+    'pong-solo':'438f1ef89d4a391bb7d8a4839f082ddd89d3d8a1d6c23e7927f266ca1318341f',
+    // Compact keypad layout; connections and lane separation are checked independently.
+    'decimal-keypad-4':'e1db0a0ea013b77ba09bb46c2dd034565a77597ffd174ef053b3ecd6b40acc24',
+    'counter-0-15':'4a89231d3be713a4edd10a156d4ab0250d6d89b5df88c46bd3fb64f3572ac28b'
+  };
+  for(const [id,hash] of Object.entries(expected)){
+    const serialized=run(`(()=>{model=structuredClone(BUILT_IN_DESIGNS.find(d=>d.id==='${id}'));const drawing=wireDrawing(wireNetworks());return JSON.stringify([[...drawing.paths],[...drawing.bridges],[...drawing.layers],drawing.junctions]);})()`);
+    assert.equal(createHash('sha256').update(serialized).digest('hex'),hash,id);
+  }
+});
 test('straight two-wire continuations do not add a cluttering junction dot',()=>{
   run("model={nodes:[],wires:[{id:'left',from:{x:0,y:0},to:{x:50,y:0},points:[]},{id:'right',from:{x:50,y:0},to:{x:100,y:0},points:[]}]};");
   assert.equal(run('wireDrawing(wireNetworks()).junctions.length'),0);
@@ -192,7 +218,7 @@ test('overlapping wire picker identifies only the routes near the click',()=>{
 test('crossing sections stay above vertical legs even when both wires have bumps',()=>{
   run(`class TestSvg{
     constructor(){this.children=[];this.attrs={};this.dataset={};this.style={setProperty:(k,v)=>this.attrs[k]=v};}
-    setAttribute(k,v){this.attrs[k]=String(v);}append(...items){this.children.push(...items);}replaceChildren(){this.children=[];}addEventListener(){}
+    setAttribute(k,v){this.attrs[k]=String(v);}append(...items){this.children.push(...items);}replaceChildren(...items){this.children=items;}addEventListener(){}
     cloneNode(){const copy=new TestSvg();copy.attrs={...this.attrs};return copy;}
   }
   const testElements=new Map();document.getElementById=id=>{if(!testElements.has(id))testElements.set(id,new TestSvg());return testElements.get(id);};document.createElementNS=()=>new TestSvg();els.wires=new TestSvg();
@@ -217,7 +243,7 @@ test('crossing sections stay above vertical legs even when both wires have bumps
     `);
     assert.equal(run('geometry.bridges.size'),2,'both wires need to cross over the other');
     assert.equal(run('JSON.stringify(model)===unchanged'),true,'rendering must not reroute or edit the circuit');
-    assert.equal(run("visiblePaths.map(p=>p.dataset.layer).join(',')"),'under,under,over,over');
+    assert.equal(run("visiblePaths.map(p=>p.dataset.layer).filter((layer,i,list)=>i===0||layer!==list[i-1]).join(',')"),'under,over','every crossing section stays above all vertical runs');
     assert.equal(run("visiblePaths.filter(p=>p.dataset.id==='h').every(p=>p.attrs.class==='wire-path wire-neon selected'&&p.attrs['--neon-color']===neonColor(model.wires.find(w=>w.id==='h')).hex)"),true);
     assert.equal(run(`model.wires.every(w=>{
       const parts=visiblePaths.filter(p=>p.dataset.id===w.id);

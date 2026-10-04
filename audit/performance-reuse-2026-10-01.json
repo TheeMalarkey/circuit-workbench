@@ -1,0 +1,211 @@
+{
+  "scope": "Node.js simulator CPU only; rendering and persistence stubbed; not browser FPS",
+  "sources": {
+    "before": "38f9603820c1c390d0e74e497397c0c43656da979b1dcb1541a5bf111134d179",
+    "after": "693b4c6ceb37b812c07ebd4759fc1dd3474f7cd782eb217a5ec287c2a112ac44"
+  },
+  "parity": [
+    {
+      "case": "calculator",
+      "fullPinTransitions": 201,
+      "checkpoints": 46,
+      "identical": true
+    },
+    {
+      "case": "delay-feedback",
+      "fullPinTransitions": 13,
+      "checkpoints": 22,
+      "identical": true
+    },
+    {
+      "case": "sustain-feedback",
+      "fullPinTransitions": 5,
+      "checkpoints": 12,
+      "identical": true
+    },
+    {
+      "case": "sustain-memory",
+      "fullPinTransitions": 5,
+      "checkpoints": 7,
+      "identical": true
+    },
+    {
+      "case": "buffer-forwarding",
+      "fullPinTransitions": 14,
+      "checkpoints": 26,
+      "identical": true
+    },
+    {
+      "case": "joined-latch",
+      "fullPinTransitions": 13,
+      "checkpoints": 25,
+      "identical": true
+    },
+    {
+      "case": "unstable-loop",
+      "fullPinTransitions": 2,
+      "checkpoints": 5,
+      "identical": true
+    }
+  ],
+  "before": {
+    "parts": 1155,
+    "wires": 2605,
+    "idle": {
+      "calls": 100,
+      "batches": [
+        {
+          "calls": 10,
+          "cpuMs": 78,
+          "wallMs": 25.61
+        },
+        {
+          "calls": 10,
+          "cpuMs": 16,
+          "wallMs": 17.098
+        },
+        {
+          "calls": 10,
+          "cpuMs": 15,
+          "wallMs": 18.465
+        },
+        {
+          "calls": 10,
+          "cpuMs": 16,
+          "wallMs": 16.53
+        },
+        {
+          "calls": 10,
+          "cpuMs": 16,
+          "wallMs": 16.153
+        },
+        {
+          "calls": 10,
+          "cpuMs": 15,
+          "wallMs": 16.623
+        },
+        {
+          "calls": 10,
+          "cpuMs": 16,
+          "wallMs": 16.621
+        },
+        {
+          "calls": 10,
+          "cpuMs": 31,
+          "wallMs": 18.277
+        },
+        {
+          "calls": 10,
+          "cpuMs": 16,
+          "wallMs": 18.073
+        },
+        {
+          "calls": 10,
+          "cpuMs": 15,
+          "wallMs": 19.408
+        }
+      ],
+      "medianCpuMsPerCall": 1.6,
+      "medianWallMsPerCall": 1.759
+    },
+    "active": {
+      "workload": "Enter 12 and 3, capture both, calculate 12 × 3",
+      "samples": [
+        {
+          "cpuMs": 4141,
+          "wallMs": 4141.174
+        },
+        {
+          "cpuMs": 4233,
+          "wallMs": 4108.749
+        },
+        {
+          "cpuMs": 4140,
+          "wallMs": 4120.081
+        }
+      ],
+      "medianCpuMs": 4141,
+      "medianWallMs": 4120.081
+    }
+  },
+  "after": {
+    "parts": 1155,
+    "wires": 2605,
+    "idle": {
+      "calls": 100,
+      "batches": [
+        {
+          "calls": 10,
+          "cpuMs": 47,
+          "wallMs": 25.451
+        },
+        {
+          "calls": 10,
+          "cpuMs": 16,
+          "wallMs": 17.911
+        },
+        {
+          "calls": 10,
+          "cpuMs": 15,
+          "wallMs": 17.441
+        },
+        {
+          "calls": 10,
+          "cpuMs": 16,
+          "wallMs": 17.789
+        },
+        {
+          "calls": 10,
+          "cpuMs": 16,
+          "wallMs": 17.238
+        },
+        {
+          "calls": 10,
+          "cpuMs": 31,
+          "wallMs": 17.784
+        },
+        {
+          "calls": 10,
+          "cpuMs": 16,
+          "wallMs": 21.078
+        },
+        {
+          "calls": 10,
+          "cpuMs": 31,
+          "wallMs": 17.076
+        },
+        {
+          "calls": 10,
+          "cpuMs": 15,
+          "wallMs": 16.826
+        },
+        {
+          "calls": 10,
+          "cpuMs": 16,
+          "wallMs": 16.854
+        }
+      ],
+      "medianCpuMsPerCall": 1.6,
+      "medianWallMsPerCall": 1.761
+    },
+    "active": {
+      "workload": "Enter 12 and 3, capture both, calculate 12 × 3",
+      "samples": [
+        {
+          "cpuMs": 2625,
+          "wallMs": 2598.04
+        },
+        {
+          "cpuMs": 2609,
+          "wallMs": 2614.302
+        },
+        {
+          "cpuMs": 2562,
+          "wallMs": 2587.665
+        }
+      ],
+      "medianCpuMs": 2609,
+      "medianWallMs": 2598.04
+    }
+  }
+}

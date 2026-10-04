@@ -47,12 +47,12 @@ test('seven-segment face stays red even when a legacy save contains another colo
   assert.equal(source.includes('Cycle display color'),false);
   assert.equal(r.run("NEON_COLORS.find(c=>c.name==='Green').hex"),'#20e837');
 });
-test('fourteen-segment face inherits the seven-segment fixed-red styling',()=>{
+test('fourteen-segment face uses fixed-red SVG fills without per-segment filters',()=>{
   const css=fs.readFileSync(path.join(__dirname,'../dist/styles.css'),'utf8');
-  assert.match(css,/\.node\.display14-part\s*\{\s*background:linear-gradient/);
-  assert.match(css,/\.segment14\.lit\s*\{\s*background:#f21b22/);
-  assert.match(css,/\.node\.display7-part::before,\.node\.display14-part::before\s*\{/);
-  assert.match(css,/\.segment14-j\s*\{[^}]*rotate\(25deg\)/);
+  assert.match(css,/--display14-lit\s*:\s*#[0-9a-f]{6}/i);
+  assert.match(css,/\.segment14\s*\{[^}]*fill:\s*var\(--display14-unlit\)/);
+  assert.match(css,/\.segment14\.lit\s*\{[^}]*fill:\s*var\(--display14-lit\)/);
+  for(const rule of css.matchAll(/\.segment14(?:\.lit)?\s*\{([^}]*)\}/g))assert.doesNotMatch(rule[1],/(?:^|;)\s*filter\s*:/);
   assert.equal(source.includes('Cycle display color'),false);
 });
 test('seven-segment bottom labels sit on a gray lip without changing the circuit footprint',()=>{

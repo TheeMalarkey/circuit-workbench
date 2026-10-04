@@ -1,0 +1,15 @@
+{
+  "scope": "Node.js cold wire connectivity build, not browser FPS",
+  "beforeMs": [
+    1730.267,
+    1752.292,
+    1729.784
+  ],
+  "afterMs": [
+    336.256,
+    290.407,
+    298.48
+  ],
+  "networksIdentical": true,
+  "initialPinsIdentical": true
+}

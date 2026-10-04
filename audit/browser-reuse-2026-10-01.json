@@ -1,0 +1,39 @@
+{
+  "scope": "One paired synthetic right-button pan plus wheel-zoom run in isolated in-app-browser origin; 24 warmup and 120 measured frames. Not physical-device acceptance or a universal FPS guarantee.",
+  "design": "calculator-9999",
+  "parts": 1155,
+  "wires": 2605,
+  "region": "back",
+  "renderer": "Original SVG, original filters enabled",
+  "before": {
+    "medianFrameMs": 33.3,
+    "p95FrameMs": 50,
+    "maxFrameMs": 66.7,
+    "framesOver33_5Ms": 24,
+    "timingPaintCalls": 78,
+    "timingPaintTotalMs": 88.3,
+    "simulationCalls": 77,
+    "simulationTotalMs": 150.1
+  },
+  "after": {
+    "medianFrameMs": 33.3,
+    "p95FrameMs": 49.9,
+    "maxFrameMs": 83.2,
+    "framesOver33_5Ms": 8,
+    "timingPaintCalls": 78,
+    "timingPaintTotalMs": 2.1,
+    "simulationCalls": 77,
+    "simulationTotalMs": 80.1,
+    "consoleErrors": []
+  },
+  "calculatorUiAcceptance": {
+    "method": "Actual mouse clicks on the isolated calculator keypad, capture buttons and Calculate; settled DOM segment states verified.",
+    "entry": "12",
+    "variable1": "0012; entry cleared to 0000 after capture",
+    "variable2": "0003; entry cleared after capture",
+    "operation": "addition",
+    "result": "00000015",
+    "controlsReturnedToReady": true
+  },
+  "conclusion": "Substantial reduction in timer DOM work, but no median pan/zoom frame-time improvement. Camera rendering remains a separate next milestone. Nested JavaScript times must not be added together."
+}

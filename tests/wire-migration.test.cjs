@@ -11,6 +11,17 @@ function app() {
 }
 const node = (id,type,extra={}) => ({id,type,x:20,y:40,rotation:0,...extra});
 const wire = (id,from,to) => ({id,from:{node:from,index:0},to:{node:to,index:0},points:[]});
+test('normalizing a valid off-grid circuit preserves a free-end contact',()=>{
+  const ctx=app();
+  ctx.fixture={name:'off-grid contact',nodes:[node('source','lever',{on:true}),node('gate','or',{x:308})],wires:[
+    {id:'lead',from:{x:44,y:136},to:{node:'gate',side:'in',index:0},points:[{x:144,y:136},{x:144,y:76}]}]};
+  vm.runInContext('model=fixture;resetTiming();simulate(false)',ctx);
+  assert.equal(vm.runInContext("values.get('gate').out[0]",ctx),true);
+  ctx.fixture=ctx.api.normalize(ctx.fixture);
+  vm.runInContext('model=fixture;resetTiming();simulate(false)',ctx);
+  assert.equal(vm.runInContext("nodeBy('source').x",ctx),20);
+  assert.equal(vm.runInContext("values.get('gate').out[0]",ctx),true);
+});
 test('saved Clock delay circuits migrate to Signal Delay without losing settings or wiring',()=>{
   const ctx=app();
   const original={name:'old timing',nodes:[node('source','lever',{on:true}),node('timer','clock',{delay:4})],wires:[wire('wire','source','timer')]};
@@ -316,7 +327,9 @@ test('starting from a loose end preserves the original wire and adds a branch',(
 });
 test('every built-in design is a valid editable circuit',()=>{
   const ctx=app();
-  assert.equal(vm.runInContext('BUILT_IN_DESIGNS.length',ctx),33);
+  assert.equal(vm.runInContext('PRACTICAL_DESIGNS.length',ctx),12);
+  assert.equal(vm.runInContext('DECIMAL_KEYPAD_DESIGNS.length',ctx),4);
+  assert.equal(vm.runInContext('BUILT_IN_DESIGNS.length',ctx),33+12+4+1+1+2);
   assert.equal(vm.runInContext('BUILT_IN_DESIGNS.every(d=>valid({name:d.name,nodes:d.nodes,wires:d.wires}))',ctx),true);
 });
 test('adding a built-in design uses fresh IDs and leaves existing parts intact',()=>{

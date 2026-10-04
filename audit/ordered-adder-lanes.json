@@ -1,0 +1,270 @@
+{
+  "name": "Ordered adder lanes",
+  "nodes": [
+    {
+      "id": "adder",
+      "type": "fullAdder",
+      "x": 0,
+      "y": 0,
+      "rotation": 0
+    }
+  ],
+  "wires": [
+    {
+      "id": "tidy-0",
+      "from": {
+        "x": -192,
+        "y": 192
+      },
+      "to": {
+        "node": "adder",
+        "side": "in",
+        "index": 0
+      },
+      "points": [
+        {
+          "x": -192,
+          "y": 192
+        },
+        {
+          "x": -192,
+          "y": 192
+        },
+        {
+          "x": 24,
+          "y": 192
+        },
+        {
+          "x": 24,
+          "y": 108
+        }
+      ],
+      "style": "normal",
+      "color": "White"
+    },
+    {
+      "id": "tidy-1",
+      "from": {
+        "x": -192,
+        "y": 216
+      },
+      "to": {
+        "node": "adder",
+        "side": "in",
+        "index": 1
+      },
+      "points": [
+        {
+          "x": -192,
+          "y": 216
+        },
+        {
+          "x": -192,
+          "y": 216
+        },
+        {
+          "x": 72,
+          "y": 216
+        },
+        {
+          "x": 72,
+          "y": 120
+        }
+      ],
+      "style": "normal",
+      "color": "White"
+    },
+    {
+      "id": "tidy-2",
+      "from": {
+        "x": -192,
+        "y": 240
+      },
+      "to": {
+        "node": "adder",
+        "side": "in",
+        "index": 2
+      },
+      "points": [
+        {
+          "x": -192,
+          "y": 240
+        },
+        {
+          "x": -192,
+          "y": 240
+        },
+        {
+          "x": 120,
+          "y": 240
+        },
+        {
+          "x": 120,
+          "y": 132
+        }
+      ],
+      "style": "normal",
+      "color": "White"
+    },
+    {
+      "id": "tidy-3",
+      "from": {
+        "x": -192,
+        "y": 264
+      },
+      "to": {
+        "node": "adder",
+        "side": "in",
+        "index": 3
+      },
+      "points": [
+        {
+          "x": -192,
+          "y": 264
+        },
+        {
+          "x": -192,
+          "y": 264
+        },
+        {
+          "x": 168,
+          "y": 264
+        },
+        {
+          "x": 168,
+          "y": 144
+        }
+      ],
+      "style": "normal",
+      "color": "White"
+    },
+    {
+      "id": "tidy-4",
+      "from": {
+        "x": -192,
+        "y": 288
+      },
+      "to": {
+        "node": "adder",
+        "side": "in",
+        "index": 4
+      },
+      "points": [
+        {
+          "x": -192,
+          "y": 288
+        },
+        {
+          "x": -192,
+          "y": 288
+        },
+        {
+          "x": 264,
+          "y": 288
+        },
+        {
+          "x": 264,
+          "y": 156
+        }
+      ],
+      "style": "normal",
+      "color": "White"
+    },
+    {
+      "id": "tidy-5",
+      "from": {
+        "x": -192,
+        "y": 312
+      },
+      "to": {
+        "node": "adder",
+        "side": "in",
+        "index": 5
+      },
+      "points": [
+        {
+          "x": -192,
+          "y": 312
+        },
+        {
+          "x": -192,
+          "y": 312
+        },
+        {
+          "x": 312,
+          "y": 312
+        },
+        {
+          "x": 312,
+          "y": 168
+        }
+      ],
+      "style": "normal",
+      "color": "White"
+    },
+    {
+      "id": "tidy-6",
+      "from": {
+        "x": -192,
+        "y": 336
+      },
+      "to": {
+        "node": "adder",
+        "side": "in",
+        "index": 6
+      },
+      "points": [
+        {
+          "x": -192,
+          "y": 336
+        },
+        {
+          "x": -192,
+          "y": 336
+        },
+        {
+          "x": 360,
+          "y": 336
+        },
+        {
+          "x": 360,
+          "y": 180
+        }
+      ],
+      "style": "normal",
+      "color": "White"
+    },
+    {
+      "id": "tidy-7",
+      "from": {
+        "x": -192,
+        "y": 360
+      },
+      "to": {
+        "node": "adder",
+        "side": "in",
+        "index": 7
+      },
+      "points": [
+        {
+          "x": -192,
+          "y": 360
+        },
+        {
+          "x": -192,
+          "y": 360
+        },
+        {
+          "x": 408,
+          "y": 360
+        },
+        {
+          "x": 408,
+          "y": 192
+        }
+      ],
+      "style": "normal",
+      "color": "White"
+    }
+  ]
+}

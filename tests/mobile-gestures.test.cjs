@@ -78,6 +78,28 @@ test('pinch zoom anchors the midpoint, pans with both fingers, and continues wit
   touch(context, 'up', 2, 370, 100);
   assert.equal(read(context, 'gesture'), null);
 });
+test('two-finger zoom out and pan together keep the same world point under the midpoint', () => {
+  const context = workspace();
+  touch(context, 'down', 1, 100, 100);
+  touch(context, 'down', 2, 300, 100);
+  touch(context, 'move', 1, 180, 150);
+  touch(context, 'move', 2, 280, 150);
+  assert.deepEqual(read(context, 'view'), { x: 130, y: 100, scale: .5 });
+  touch(context, 'move', 1, 210, 170);
+  touch(context, 'move', 2, 310, 170);
+  assert.deepEqual(read(context, 'view'), { x: 160, y: 120, scale: .5 });
+});
+test('a wheel zoom during an active pinch rebases the gesture instead of snapping back', () => {
+  const context = workspace();
+  touch(context, 'down', 1, 100, 100);
+  touch(context, 'down', 2, 200, 100);
+  touch(context, 'move', 2, 280, 100);
+  vm.runInContext('zoomAt(.8,190,100);globalThis.afterWheel={...view}', context);
+  touch(context, 'move', 2, 280, 100);
+  assert.deepEqual(read(context, 'view'), read(context, 'afterWheel'));
+  touch(context, 'move', 2, 300, 100);
+  assert.ok(read(context, 'view.scale')>read(context, 'afterWheel.scale'));
+});
 
 test('pinching during a part drag cancels the unsaved movement', () => {
   const context = workspace();

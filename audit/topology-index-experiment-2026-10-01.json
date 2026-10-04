@@ -1,0 +1,15 @@
+{
+  "scope": "Diagnostic fixture only; indexing threshold is changed in memory, production files are unchanged",
+  "beforeColdMs": [
+    1832.251,
+    1883.842,
+    1810.37
+  ],
+  "experimentalColdMs": [
+    272.558,
+    252.46,
+    249.234
+  ],
+  "networksIdentical": true,
+  "initialPinsIdentical": true
+}

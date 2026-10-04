@@ -1,0 +1,54 @@
+{
+  "scope": "Node.js simulator CPU only; rendering and persistence stubbed; not browser FPS",
+  "sources": {
+    "before": null,
+    "after": "38f9603820c1c390d0e74e497397c0c43656da979b1dcb1541a5bf111134d179"
+  },
+  "parity": [],
+  "after": {
+    "parts": 1155,
+    "wires": 2605,
+    "idle": {
+      "calls": 40,
+      "batches": [
+        {
+          "calls": 10,
+          "cpuMs": 32,
+          "wallMs": 31.206
+        },
+        {
+          "calls": 10,
+          "cpuMs": 15,
+          "wallMs": 18.973
+        },
+        {
+          "calls": 10,
+          "cpuMs": 16,
+          "wallMs": 18.562
+        },
+        {
+          "calls": 10,
+          "cpuMs": 47,
+          "wallMs": 19.996
+        }
+      ],
+      "medianCpuMsPerCall": 2.4,
+      "medianWallMsPerCall": 1.948
+    },
+    "active": {
+      "workload": "Enter 12 and 3, capture both, calculate 12 × 3",
+      "samples": [
+        {
+          "cpuMs": 4828,
+          "wallMs": 4623.28
+        },
+        {
+          "cpuMs": 4485,
+          "wallMs": 4496.859
+        }
+      ],
+      "medianCpuMs": 4656.5,
+      "medianWallMs": 4560.069
+    }
+  }
+}

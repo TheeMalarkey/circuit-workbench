@@ -68,6 +68,20 @@ test('unsettled inverter feedback is disclosed and independent of disconnected p
   assert.equal(r.run("values.get('g').out[0]"),true);
 });
 
+test('a false AND input masks oscillator uncertainty before a selector',()=>{
+  const r=rig();init(r,`{name:'masked oscillator',nodes:[designNode('osc','inverter',0,0),designNode('mask','and',384,0),designNode('button','button',384,384),designNode('sink','selector4',768,0,{channel:0})],wires:[
+    designWire('feedback',{node:'osc',side:'out',index:0},{node:'osc',side:'in',index:0},[{x:144,y:48},{x:144,y:-48},{x:-48,y:-48},{x:-48,y:48}]),
+    designWire('to-mask',{node:'osc',side:'out',index:0},{node:'mask',side:'in',index:0},[{x:240,y:48},{x:240,y:24}]),
+    designWire('masked',{node:'mask',side:'out',index:0},{node:'sink',side:'in',index:0}),
+    designWire('press',{node:'button',side:'out',index:0},{node:'sink',side:'in',index:0},[{x:672,y:480},{x:672,y:48}])]}`);
+  r.run("pressButton(nodeBy('button'))");
+  assert.equal(r.run("values.get('osc').unstable"),true);
+  assert.equal(r.run("values.get('mask').out[0]"),false);
+  assert.equal(r.run("values.get('sink').in[0]"),true);
+  assert.equal(r.run("!!values.get('sink').unstable"),false);
+  assert.equal(r.run("nodeBy('sink').channel"),1);
+});
+
 test('the large built-in circuits settle without false instability warnings',()=>{
   const r=rig();
   for(const id of ['calculator-0-0','eight-bit-adder-bench','counter-0-15','traffic-light-controller','pong-solo']){
@@ -86,6 +100,18 @@ test('linked latch selection is invariant to splitting or freeing a wire endpoin
   };
   const original=state('original');assert.deepEqual(original,[false,true]);
   assert.deepEqual(state('loose'),original);assert.deepEqual(state('split'),original);
+});
+
+test('tidying a joined latch cannot change which output its button selects',()=>{
+  const state=tidy=>{
+    const r=rig();init(r,"structuredClone(BUILT_IN_DESIGNS.find(d=>d.id==='sr-latch-linked'))");
+    r.run("model.wires.find(w=>w.id==='top-feed').points=[{x:192,y:96},{x:192,y:120},{x:144,y:120},{x:144,y:-96},{x:240,y:-96},{x:240,y:120}]");
+    if(tidy)r.run("const before=wireNetworkSignature();model.wires=planTidyBestEffort().wires;if(before!==wireNetworkSignature())throw Error('Tidy changed connections')");
+    r.run("simulate(false);pressButton(nodeBy('top'));simulate(true,800)");
+    return r.json("values.get('latch').out");
+  };
+  assert.deepEqual(state(false),[false,true]);
+  assert.deepEqual(state(true),[false,true]);
 });
 
 test('linked latch output does not depend on simulation frame size',()=>{

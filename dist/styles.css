@@ -508,8 +508,11 @@ dialog{background:var(--panel);color:var(--text);border:1px solid var(--border-s
 .node.converter14-part .node-title { top:77px;height:38px;font-size:12px;line-height:1.15;white-space:normal;text-align:center; }
 .node.converter14-part .port,.node.display14-part .port { width:11px;height:11px;min-height:11px; }
 .node.converter14-part .port-label,.node.display14-part .port-label { display:none!important; }
-.node.display14-part { background:linear-gradient(115deg,#5a6060,#3b4243);border-color:#262b2e;border-radius:4px; }
-.node.display7-part::before,.node.display14-part::before {
+.node.display14-part { background:transparent;border-color:transparent;border-radius:3px;box-shadow:none; }
+.node.display14-part::before { display:none; }
+.node.display14-part:hover { border-color:#777b6d; }
+.node.display14-part.selected { border-color:#d4efff;box-shadow:0 0 0 2px #89d5ff; }
+.node.display7-part::before {
   inset:3px 4px 5px;border:0;border-radius:0;
   clip-path:polygon(10% 0,90% 0,100% 7%,100% 93%,90% 100%,10% 100%,0 93%,0 7%);
   background:#1b2026;box-shadow:none;
@@ -521,25 +524,11 @@ dialog{background:var(--panel);color:var(--text);border:1px solid var(--border-s
 .node.converter14-part.stacked::before,.node.converter14-part.stacked::after { display:none; }
 .node.converter14-part.stacked .port.in { pointer-events:auto; }
 .node.display14-part.stacked .port { visibility:hidden; }
-.segment14-face { position:absolute;inset:0;pointer-events:none; }
-.segment14 { position:absolute;background:#22282f; }
-.segment14.lit { background:#f21b22;filter:drop-shadow(0 0 2px #f21b2288); }
-.segment14-a,.segment14-d { width:74px;height:14px;left:11px; }
-.segment14-a { top:10px;clip-path:polygon(0 0,100% 0,84% 100%,16% 100%); }
-.segment14-d { top:168px;clip-path:polygon(16% 0,84% 0,100% 100%,0 100%); }
-.segment14-g1,.segment14-g2 { width:37px;height:14px;top:89px; }
-.segment14-g1 { left:11px;clip-path:polygon(30% 0,100% 0,100% 100%,30% 100%,0 50%); }
-.segment14-g2 { left:48px;clip-path:polygon(0 0,70% 0,100% 50%,70% 100%,0 100%); }
-.segment14-b,.segment14-c,.segment14-e,.segment14-f,.segment14-l,.segment14-m { width:14px;height:66px;clip-path:polygon(0 14%,50% 0,100% 15%,100% 85%,50% 100%,0 86%); }
-.segment14-b { left:76px;top:25px; }.segment14-c { left:76px;top:101px; }
-.segment14-e { left:6px;top:101px; }.segment14-f { left:6px;top:25px; }
-.segment14-l,.segment14-m { width:10px;left:43px; }
-.segment14-l { top:25px; }.segment14-m { top:101px; }
-.segment14-h,.segment14-i,.segment14-j,.segment14-k { width:10px;height:72px;clip-path:polygon(50% 0,100% 7%,100% 93%,50% 100%,0 93%,0 7%); }
-.segment14-h { left:28px;top:24px;transform:rotate(-25deg); }
-.segment14-i { left:58px;top:24px;transform:rotate(25deg); }
-.segment14-j { left:28px;top:98px;transform:rotate(25deg); }
-.segment14-k { left:58px;top:98px;transform:rotate(-25deg); }
+.segment14-face { --display14-unlit:#0b111a;--display14-lit:#f01912;position:absolute;left:-1px;top:-1px;width:96px;height:192px;pointer-events:none; }
+.segment14 { fill:var(--display14-unlit);stroke:none; }
+.segment14.lit { fill:var(--display14-lit); }
+/* Show the fourteen-stroke layout in the parts catalog without lighting a live circuit. */
+.preview-node .segment14 { fill:#303b43; }
 .palette .part-preview .preview-node.converter14-part,.palette .part-preview .preview-node.display14-part { transform:translate(-50%,-50%) scale(.34); }
 .design-reference { display:inline-block;margin-left:14px;color:var(--cyan);font-size:12px; }
 .node.delay-part,.node.sustain-part { border:0;background:transparent;border-radius:15px 15px 5px 5px;box-shadow:0 6px 6px #28251977; }
@@ -675,4 +664,7 @@ dialog{background:var(--panel);color:var(--text);border:1px solid var(--border-s
 .file-actions button{margin-top:auto;font-size:14px}
 #file-message{margin:16px 0 0;color:var(--text)}
 @media(max-width:480px){.file-actions{grid-template-columns:1fr}.file-dialog{padding:16px}}
+
+/* Pan and pinch/zoom move this entire layer; compositing avoids repainting each SVG wire. */
+#world{will-change:transform}
 

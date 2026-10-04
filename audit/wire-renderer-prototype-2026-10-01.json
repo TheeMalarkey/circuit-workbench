@@ -1,0 +1,20 @@
+{
+  "scope": "Synthetic right-button pan and wheel-zoom handlers in the in-app browser; 1155 parts, 2605 wires, 120 measured frames after 24 warmup frames. Not physical mouse/device acceptance.",
+  "decision": "Keep Canvas prototype out of dist: dense zoom improves, but dense pan is not consistently faster and control-area frame tails regress. Preserve existing SVG visuals and interactions.",
+  "caveats": "Early current-SVG runs overlapped the full test suite. Later repeat and front-area runs did not. Browser scheduling varied between runs; these are exploratory measurements, not a universal FPS guarantee.",
+  "samples": [
+    {"renderer":"baseline-svg","region":"back","mode":"pan","medianMs":33.3,"p95Ms":33.4,"maxMs":83.2},
+    {"renderer":"baseline-svg","region":"back","mode":"pan+zoom","medianMs":33.3,"p95Ms":33.5,"maxMs":66.6},
+    {"renderer":"current-svg","region":"back","mode":"pan","medianMs":33.3,"p95Ms":50,"maxMs":83.4,"concurrentTests":true},
+    {"renderer":"current-svg","region":"back","mode":"pan+zoom","medianMs":33.4,"p95Ms":50,"maxMs":66.7,"concurrentTests":true},
+    {"renderer":"canvas","region":"back","mode":"pan","medianMs":33.3,"p95Ms":49.9,"maxMs":66.7},
+    {"renderer":"canvas","region":"back","mode":"pan+zoom","medianMs":16.7,"p95Ms":33.4,"maxMs":50},
+    {"renderer":"current-svg","region":"back","mode":"pan-repeat","medianMs":33.3,"p95Ms":50,"maxMs":66.7},
+    {"renderer":"canvas","region":"back","mode":"pan-repeat","medianMs":35.2,"p95Ms":53.3,"maxMs":87.9},
+    {"renderer":"canvas","region":"back","mode":"pan+zoom-repeat","medianMs":17.9,"p95Ms":35.8,"maxMs":53},
+    {"renderer":"canvas","region":"front","mode":"pan+zoom","medianMs":17.7,"p95Ms":35.7,"maxMs":52.9,"framesOver33_5Ms":25},
+    {"renderer":"current-svg","region":"front","mode":"pan+zoom","medianMs":17.6,"p95Ms":18.3,"maxMs":142.1,"framesOver33_5Ms":3}
+  ],
+  "prototypeFeatures": ["original M/L/Q bridge paths","under/over drawing order","computed stroke colors and glow filters","original SVG hit paths","original endpoints and bend handles","original selection traces, junctions and drafts"],
+  "remainingGates": ["raster equivalence at multiple scales and device pixel ratios","active-calculation signal repaint cost","full edit interaction acceptance","real touch/mouse tests"]
+}

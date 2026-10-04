@@ -1,0 +1,57 @@
+{
+  "scope": "Investigation only. The shipped dist assets and normal saved circuits were not edited. Experiments are opt-in on the isolated localhost:8783 diagnostic server.",
+  "workload": {
+    "design": "calculator-9999",
+    "nodes": 1155,
+    "wires": 2605,
+    "svgPaths": 14531,
+    "region": "back",
+    "scale": 0.45,
+    "warmupFrames": 24,
+    "measuredFrames": 120,
+    "simulationRunning": true,
+    "wireFiltersEnabled": true,
+    "input": "Synthetic mouse pan handler and wheel-zoom handler, not a physical mouse latency test"
+  },
+  "samples": [
+    {"layer":"original","mode":"pan","medianMs":33.3,"p95Ms":50,"maxMs":100,"cameraJsMedianMs":0.1,"cameraJsP95Ms":0.2},
+    {"layer":"original","mode":"pan + zoom","medianMs":33.3,"p95Ms":33.4,"maxMs":50,"cameraJsMedianMs":0.1,"cameraJsP95Ms":0.2},
+    {"layer":"no-hint","mode":"pan","medianMs":33.3,"p95Ms":33.4,"maxMs":50,"cameraJsMedianMs":0.1,"cameraJsP95Ms":0.2},
+    {"layer":"no-hint","mode":"pan + zoom","medianMs":100,"p95Ms":199.9,"maxMs":433.1,"cameraJsMedianMs":0.1,"cameraJsP95Ms":0.2},
+    {"layer":"viewport-svg","mode":"pan","medianMs":50,"p95Ms":66.7,"maxMs":83.3,"cameraJsMedianMs":0.3,"cameraJsP95Ms":0.4},
+    {"layer":"viewport-svg","mode":"pan + zoom","medianMs":33.4,"p95Ms":66.6,"maxMs":66.7,"cameraJsMedianMs":0.4,"cameraJsP95Ms":0.6},
+    {"layer":"no-wires","mode":"pan","medianMs":16.7,"p95Ms":16.8,"maxMs":33.4,"cameraJsMedianMs":0.1,"cameraJsP95Ms":0.2},
+    {"layer":"no-nodes","mode":"pan","medianMs":33.3,"p95Ms":33.5,"maxMs":50.1,"cameraJsMedianMs":0.1,"cameraJsP95Ms":0.2},
+    {"layer":"original-repeat","mode":"pan","medianMs":33.3,"p95Ms":50,"maxMs":66.7,"cameraJsMedianMs":0.1,"cameraJsP95Ms":0.2},
+    {"layer":"no-wires","mode":"pan + zoom","medianMs":16.7,"p95Ms":16.8,"maxMs":16.8,"cameraJsMedianMs":0.1,"cameraJsP95Ms":0.2}
+  ],
+  "findings": [
+    "Wire visual rendering is the dominant measured component in this dense region: suppressing only wire visuals, while retaining their DOM, hit paths and electrical model, reduced pan and mixed pan/zoom medians to 16.7 ms. This was a diagnostic ablation, not a shippable fix.",
+    "Suppressing board visuals did not reduce the 33.3 ms median. Optimizing board art first is not supported by these results.",
+    "Removing the world will-change hint worsened zoom. Keep the existing hint; do not assume fewer compositor layers is automatically better.",
+    "Moving the same wire SVG into a screen-sized sibling layer with a camera viewBox did not help. It retained all 14531 paths and original filters but caused more camera-dependent drawing work.",
+    "This narrows the bottleneck to wire rendering; it does not identify exact browser raster, paint or compositor internals. No browser GPU trace was captured.",
+    "Previous full-frame Canvas redraw experiments were not reliably faster. A renderer replacement is not justified without a changed caching strategy and visual/editing parity tests."
+  ],
+  "recommendedNextExperiment": {
+    "approach": "A tile-cached wire drawing prototype, outside dist, rather than repainting every visible wire on every camera frame.",
+    "cacheKey": "Geometry revision, wire appearance and signal revision, tile coordinates, scale and device pixel ratio",
+    "camera": "Move cached image regions for pan; refresh exposed regions and appropriate zoom-resolution tiles. Preserve crisp final zoom rendering.",
+    "signals": "Invalidate and redraw affected regions on actual signal changes. Never freeze simulation or knowingly retain stale lit wires.",
+    "editing": "Keep original SVG selection/hit geometry, junctions, crossing order, bend and endpoint handles. Update geometry caches for edits, undo, import and project switches.",
+    "acceptance": [
+      "Repeat original and cached runs in front and back areas without concurrent tests, measuring median, p95 and long stalls",
+      "Verify raster appearance across zoom levels, device pixel ratios, crossing bumps, neon, glow, selection and tile seams",
+      "Test active calculator calculations, timed signal loops and immediate signal visibility during pan",
+      "Test mouse and touch pan/zoom, wire selection, bends, endpoints, dragging, resize, undo and saved-project restoration",
+      "No circuit-size limits, removed features or production changes"
+    ],
+    "status": "Recommended, not implemented or proven faster"
+  },
+  "references": [
+    "https://web.dev/articles/rendering-performance",
+    "https://developer.chrome.com/blog/re-rastering-composite",
+    "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/will-change"
+  ],
+  "caveats": "Small controlled samples on one in-app browser. No universal FPS or mobile-device guarantee. Normal preview was found stopped and restarted on localhost:8781. All ablation styles were reset to original before cleanup."
+}

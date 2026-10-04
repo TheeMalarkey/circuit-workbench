@@ -1,0 +1,68 @@
+{
+  "scope": "Read-only performance investigation. No application edits, browser save changes, feature removals, limits, or deployment.",
+  "applicationSha256": "89070B82E7A68F0087F192852FEF83AFAA6C6C35B9BED212A501B0643B365697",
+  "cpuProfile": {
+    "scope": "Node.js VM simulator, rendering and persistence stubbed; includes initialization and warmed workloads, not browser FPS",
+    "sampledMs": 15496.7,
+    "exclusivePercent": {
+      "resolveSignalsExcludingNestedNetworkWork": 49.5,
+      "networkSignals": 34.9,
+      "wireNetworks": 7.2,
+      "settleTiming": 4.4,
+      "garbageCollection": 1.1
+    },
+    "activeWorkload": "Enter 12 and 3, capture both, calculate 12 times 3; virtual time accelerated",
+    "activeMedianWallMs": 4560.069,
+    "idleMedianWallMsPerCall": 1.948
+  },
+  "allocationAnalysis": {
+    "scope": "Counts derived from instrumented networkSignals calls and verified implementation; not an allocation profiler",
+    "workload": "Calculator addition, negative subtraction, multiplication and input captures",
+    "networkSignalsCalls": 2356,
+    "networks": 1606,
+    "netVisits": 3783736,
+    "temporaryDriverSets": 7567472
+  },
+  "tidyPreparation": {
+    "scope": "Actual anchor preparation stopped before route search using a diagnostic sentinel in an isolated VM; no model edits. VM timings are not browser Tidy completion times.",
+    "samples": [
+      {"selectedWires": 1, "contacts": 10176, "segments": 3, "segmentContactChecks": 30528, "preparationMs": 117.685},
+      {"selectedWires": 10, "contacts": 10176, "segments": 50, "segmentContactChecks": 508800, "preparationMs": 429.632}
+    ],
+    "wholeCalculator": {
+      "selectedWires": 2605,
+      "contacts": 10176,
+      "segments": 13813,
+      "segmentContactChecks": 140561088,
+      "scope": "Exact static loop count, not a completed routing benchmark. Full instrumented diagnostic was stopped; no application routing limit was added."
+    }
+  },
+  "editing": {
+    "scope": "20 isolated VM repetitions, not real browser localStorage throughput",
+    "largeCalculatorSnapshotMeanMs": 19.14745,
+    "largeCalculatorModelSerializationMeanMs": 4.0292,
+    "modelJsonBytes": 756271,
+    "signalValuesJsonBytes": 90293
+  },
+  "currentBrowser": {
+    "scope": "Read-only DOM inspection of existing localhost preview, script revision 123",
+    "parts": 1155,
+    "pageElements": 36688,
+    "svgPaths": 14582
+  },
+  "priorBrowserMeasurement": {
+    "source": "wire-renderer-prototype-2026-10-01.json",
+    "scope": "Earlier synthetic right-button pan and wheel zoom, not rerun during this investigation and not physical device acceptance",
+    "denseSvgPanMedianMs": 33.3,
+    "denseSvgPanP95Ms": 50,
+    "canvasDecision": "Not shipped: dense zoom improved, but dense panning was not consistently faster and control-area frame tails regressed."
+  },
+  "recommendations": [
+    "Compile reusable numeric solver workspace per topology, retaining true multi-source and displaced-buffer-driver semantics.",
+    "Track changed node and net versions; cache timer DOM references and repaint only actual changes.",
+    "Prototype tiled, cached wire rendering with original SVG editing overlay; validate sharpness, crossings, selection, and active signals before adoption.",
+    "Spatially index Tidy contacts and board obstacles; reuse geometry across retries while retaining connectivity, clearance, cancellation, and undo checks.",
+    "Use structurally shared or delta undo entries and cached unchanged project serialization, preserving existing history depth and stale-save recovery.",
+    "Consider affected-subgraph solving only after lower-risk changes, with feedback components and exact timing trace parity."
+  ]
+}

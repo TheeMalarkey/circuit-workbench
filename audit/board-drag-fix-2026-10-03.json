@@ -1,0 +1,66 @@
+{
+  "date": "2026-10-03",
+  "scope": "Board-drag rendering performance; local preview only",
+  "changes": [
+    "Coalesce selection painting to one animation frame while applying pointer movement immediately",
+    "Retain SVG wire paths, stable controls, junctions and trace elements",
+    "Reconcile reordered SVG children with a sibling cursor instead of repeated live collection reads",
+    "Batch validated node lookups during synchronous selection rendering",
+    "Skip display-stack partner searches for parts that cannot stack"
+  ],
+  "browserBenchmark": {
+    "method": "Real drag handler and rendering in the in-app browser, synthetic pointer input, four events per frame, four warmup frames and 32 measured frames, simulation running",
+    "smallCircuit": {
+      "design": "decimal-keypad-3",
+      "boards": 67,
+      "wires": 146,
+      "beforeMedianFrameMs": 83.3,
+      "afterMedianFrameMs": 16.7,
+      "afterP95FrameMs": 33.4,
+      "beforeMedianHandlerBatchMs": 27.3,
+      "afterMedianHandlerBatchMs": 1.2,
+      "beforeSelectionPaints": 144,
+      "afterSelectionPaints": 35,
+      "consoleErrors": 0
+    },
+    "largeCircuit": {
+      "design": "calculator-9999",
+      "boards": 1155,
+      "wires": 2605,
+      "beforeMedianFrameMs": 783.2,
+      "afterMedianFrameMs": 316.6,
+      "afterP95FrameMs": 383.2,
+      "beforeMedianHandlerBatchMs": 669.5,
+      "afterMedianHandlerBatchMs": 10.8,
+      "remainingIssue": "Still too slow for smooth dragging; full crossing/contact work during geometry changes remains expensive"
+    }
+  },
+  "regressionCoverage": [
+    "Immediate model movement and frame coalescing",
+    "Final release paint and single-step undo",
+    "Deletion and project gesture cancellation",
+    "Live wire signal painting and removal",
+    "Crossing geometry updates and overpass ordering",
+    "Pinch interruption and drag rollback",
+    "Bend and endpoint editing",
+    "Bulk SVG reconciliation complexity",
+    "Mutation-safe standalone node lookup"
+  ],
+  "limitations": [
+    "Synthetic browser timings are not physical mouse input-latency measurements",
+    "No physical phone acceptance test was performed",
+    "The largest calculator still has significant drag-frame latency"
+  ],
+  "featuresRemoved": [],
+  "newLimits": [],
+  "verification": {
+    "runtime": "Node 22",
+    "testsPassed": 383,
+    "testsFailed": 0,
+    "syntaxChecksPassed": true,
+    "applicationCopiesMatch": true,
+    "privacyPatternMatches": 0,
+    "localPreviewRevision": 125
+  },
+  "published": false
+}

@@ -72,6 +72,28 @@ test('shared junction has its own move action and moves the trunk and branch tog
   assert.equal(r.run('model.wires.every(w=>onWire({x:100,y:48},wireEnds(w)))'),true);
   assert.deepEqual(r.json('history.at(-1)'),before);
 });
+test('completing a junction move paints no leftover draft wire',()=>{
+  const r=rig();
+  r.run("model={name:'fork',nodes:[],wires:[{id:'trunk',from:{x:0,y:0},to:{x:200,y:0},points:[]},{id:'branch',from:{x:100,y:0},to:{x:100,y:100},points:[]}]};selectOnly('wire','branch');openWirePointMenu('branch',{end:'from'},100,100);$('wire-point-menu').children[1].onclick();var draftAtPaint=null;changed=()=>{draftAtPaint=!!draft};finishWireAt({x:100,y:48});");
+  assert.equal(r.run('draft'),null);
+  assert.equal(r.run('draftAtPaint'),false);
+  assert.equal(r.run('wireNetworks().groups.size'),1);
+});
+test('undo and delete cancel a captured bend drag before the next pointer move',()=>{
+  for(const action of ['undo()','removeSelected(true)']){
+    const r=rig();
+    r.run(`render=simulate=()=>{};model={name:'drag',nodes:[],wires:[{id:'w',from:{x:0,y:0},to:{x:200,y:0},points:[{x:100,y:0}]}]};history=[{name:'drag',nodes:[],wires:[]}];els.viewport.setPointerCapture=()=>{};els.viewport.getBoundingClientRect=()=>({left:0,top:0});view={x:0,y:0,scale:1};startWaypointDrag({button:0,pointerId:1,clientX:100,clientY:0,stopPropagation(){}},'w',0);${action}`);
+    assert.equal(r.run('gesture'),null);
+    assert.doesNotThrow(()=>r.run('onPointerMove({pointerId:1,clientX:125,clientY:25})'));
+    assert.equal(r.run('model.wires.length'),0);
+  }
+});
+test('drag commits use the same history budget as other edits',()=>{
+  const r=rig();
+  r.run("render=simulate=()=>{};els.viewport.classList={remove(){}};model={name:'drags',nodes:[{id:'l',type:'lever',x:0,y:0,rotation:0}],wires:[]};history=[];timingHistory=[];for(let i=0;i<100;i++){gesture={type:'group',pointerId:1,moved:true,before:clone(model),beforeTiming:timingSnapshot()};model.nodes[0].x+=48;onPointerUp({pointerId:1,type:'pointerup',clientX:0,clientY:0})}");
+  assert.equal(r.run('history.length'),80);
+  assert.equal(r.run('timingHistory.length'),80);
+});
 
 test('wire snapping uses subdivisions of the part grid and exact axes for unusual ports',()=>{
   const r=rig();r.run('gridSnap=true;');

@@ -1,0 +1,191 @@
+{
+  "scope": "Node.js simulator CPU only; rendering and persistence stubbed; not browser FPS",
+  "sources": {
+    "before": "0b48bf429ba9d95b21cf5739bb22f33f9e2afdfa7040fd7bd4c7c88518eca982",
+    "after": "38f9603820c1c390d0e74e497397c0c43656da979b1dcb1541a5bf111134d179"
+  },
+  "parity": [
+    {
+      "case": "calculator",
+      "fullPinTransitions": 201,
+      "checkpoints": 46,
+      "identical": true
+    },
+    {
+      "case": "delay-feedback",
+      "fullPinTransitions": 13,
+      "checkpoints": 22,
+      "identical": true
+    },
+    {
+      "case": "sustain-feedback",
+      "fullPinTransitions": 5,
+      "checkpoints": 12,
+      "identical": true
+    },
+    {
+      "case": "sustain-memory",
+      "fullPinTransitions": 5,
+      "checkpoints": 7,
+      "identical": true
+    },
+    {
+      "case": "buffer-forwarding",
+      "fullPinTransitions": 14,
+      "checkpoints": 26,
+      "identical": true
+    },
+    {
+      "case": "joined-latch",
+      "fullPinTransitions": 13,
+      "checkpoints": 25,
+      "identical": true
+    },
+    {
+      "case": "unstable-loop",
+      "fullPinTransitions": 2,
+      "checkpoints": 5,
+      "identical": true
+    }
+  ],
+  "before": {
+    "parts": 1155,
+    "wires": 2605,
+    "idle": {
+      "calls": 80,
+      "batches": [
+        {
+          "calls": 10,
+          "cpuMs": 78,
+          "wallMs": 61.876
+        },
+        {
+          "calls": 10,
+          "cpuMs": 141,
+          "wallMs": 78.247
+        },
+        {
+          "calls": 10,
+          "cpuMs": 78,
+          "wallMs": 54.273
+        },
+        {
+          "calls": 10,
+          "cpuMs": 78,
+          "wallMs": 57.428
+        },
+        {
+          "calls": 10,
+          "cpuMs": 63,
+          "wallMs": 53.117
+        },
+        {
+          "calls": 10,
+          "cpuMs": 62,
+          "wallMs": 54.341
+        },
+        {
+          "calls": 10,
+          "cpuMs": 125,
+          "wallMs": 57.974
+        },
+        {
+          "calls": 10,
+          "cpuMs": 47,
+          "wallMs": 52.042
+        }
+      ],
+      "medianCpuMsPerCall": 7.8,
+      "medianWallMsPerCall": 5.588
+    },
+    "active": {
+      "workload": "Enter 12 and 3, capture both, calculate 12 × 3",
+      "samples": [
+        {
+          "cpuMs": 4390,
+          "wallMs": 4146.411
+        },
+        {
+          "cpuMs": 4250,
+          "wallMs": 4103.037
+        },
+        {
+          "cpuMs": 4312,
+          "wallMs": 4074.64
+        }
+      ],
+      "medianCpuMs": 4312,
+      "medianWallMs": 4103.037
+    }
+  },
+  "after": {
+    "parts": 1155,
+    "wires": 2605,
+    "idle": {
+      "calls": 80,
+      "batches": [
+        {
+          "calls": 10,
+          "cpuMs": 46,
+          "wallMs": 24.213
+        },
+        {
+          "calls": 10,
+          "cpuMs": 16,
+          "wallMs": 16.081
+        },
+        {
+          "calls": 10,
+          "cpuMs": 16,
+          "wallMs": 16.142
+        },
+        {
+          "calls": 10,
+          "cpuMs": 15,
+          "wallMs": 16.167
+        },
+        {
+          "calls": 10,
+          "cpuMs": 16,
+          "wallMs": 15.852
+        },
+        {
+          "calls": 10,
+          "cpuMs": 31,
+          "wallMs": 16.498
+        },
+        {
+          "calls": 10,
+          "cpuMs": 16,
+          "wallMs": 16.965
+        },
+        {
+          "calls": 10,
+          "cpuMs": 15,
+          "wallMs": 17.305
+        }
+      ],
+      "medianCpuMsPerCall": 1.6,
+      "medianWallMsPerCall": 1.633
+    },
+    "active": {
+      "workload": "Enter 12 and 3, capture both, calculate 12 × 3",
+      "samples": [
+        {
+          "cpuMs": 4078,
+          "wallMs": 4030.44
+        },
+        {
+          "cpuMs": 4141,
+          "wallMs": 4055.903
+        },
+        {
+          "cpuMs": 3938,
+          "wallMs": 3947.846
+        }
+      ],
+      "medianCpuMs": 4078,
+      "medianWallMs": 4030.44
+    }
+  }
+}

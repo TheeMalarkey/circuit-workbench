@@ -1,0 +1,494 @@
+{
+  "scope": "CPU diagnostic: renderer and persistence stubbed; function timings include nested calls and instrumentation overhead",
+  "startupMs": 119.832,
+  "designs": [
+    {
+      "expression": "CALCULATOR_DESIGN",
+      "nodes": 1155,
+      "wires": 2605,
+      "points": 16418,
+      "ports": 4966,
+      "fallbackWires": 64,
+      "networks": 1606,
+      "timingNodes": 45,
+      "modelBytes": 756271,
+      "timingBytes": 90293,
+      "initialSettleMs": 559.838,
+      "idle": {
+        "elapsedMs": 224.08,
+        "counters": {
+          "nodeLookup": {
+            "calls": 100,
+            "totalMs": 1.252,
+            "maxMs": 0.1
+          },
+          "sameTopology": {
+            "calls": 100,
+            "totalMs": 97.357,
+            "maxMs": 1.575
+          },
+          "wireNetworks": {
+            "calls": 100,
+            "totalMs": 99.41,
+            "maxMs": 1.603
+          },
+          "advanceTiming": {
+            "calls": 100,
+            "totalMs": 5.463,
+            "maxMs": 0.2
+          }
+        }
+      },
+      "skipIdleSolve": {
+        "elapsedMs": 199.116,
+        "counters": {
+          "nodeLookup": {
+            "calls": 100,
+            "totalMs": 1.03,
+            "maxMs": 0.045
+          },
+          "sameTopology": {
+            "calls": 100,
+            "totalMs": 86.221,
+            "maxMs": 1.646
+          },
+          "wireNetworks": {
+            "calls": 100,
+            "totalMs": 87.804,
+            "maxMs": 1.681
+          },
+          "advanceTiming": {
+            "calls": 100,
+            "totalMs": 4.473,
+            "maxMs": 0.106
+          }
+        }
+      },
+      "coldTopology": {
+        "elapsedMs": 397.101,
+        "counters": {
+          "nodeLookup": {
+            "calls": 1,
+            "totalMs": 0.012,
+            "maxMs": 0.012
+          },
+          "nodeBy": {
+            "calls": 5205,
+            "totalMs": 2.45,
+            "maxMs": 0.094
+          },
+          "wireNetworks": {
+            "calls": 1,
+            "totalMs": 396.95,
+            "maxMs": 396.95
+          }
+        }
+      },
+      "coldDrawing": {
+        "elapsedMs": 249.904,
+        "counters": {
+          "nodeLookup": {
+            "calls": 1,
+            "totalMs": 0.013,
+            "maxMs": 0.013
+          },
+          "sameTopology": {
+            "calls": 1,
+            "totalMs": 0.735,
+            "maxMs": 0.735
+          },
+          "wireNetworks": {
+            "calls": 1,
+            "totalMs": 0.773,
+            "maxMs": 0.773
+          },
+          "nodeBy": {
+            "calls": 5205,
+            "totalMs": 35.125,
+            "maxMs": 0.03
+          },
+          "wireDrawing": {
+            "calls": 1,
+            "totalMs": 248.975,
+            "maxMs": 248.975
+          }
+        }
+      },
+      "cachedDrawing": {
+        "elapsedMs": 64.482,
+        "counters": {
+          "nodeLookup": {
+            "calls": 100,
+            "totalMs": 0.82,
+            "maxMs": 0.019
+          },
+          "sameTopology": {
+            "calls": 100,
+            "totalMs": 63.144,
+            "maxMs": 0.96
+          },
+          "wireNetworks": {
+            "calls": 100,
+            "totalMs": 64.187,
+            "maxMs": 0.971
+          },
+          "wireDrawing": {
+            "calls": 100,
+            "totalMs": 0.08,
+            "maxMs": 0.005
+          }
+        }
+      },
+      "snapshot": {
+        "elapsedMs": 382.949,
+        "counters": {}
+      },
+      "serialization": {
+        "elapsedMs": 80.584,
+        "counters": {}
+      }
+    },
+    {
+      "expression": "CALCULATOR_SMALL_AUTO_DESIGN",
+      "nodes": 248,
+      "wires": 482,
+      "points": 3116,
+      "ports": 890,
+      "fallbackWires": 0,
+      "networks": 297,
+      "timingNodes": 0,
+      "modelBytes": 146911,
+      "timingBytes": 18646,
+      "initialSettleMs": 92.059,
+      "idle": {
+        "elapsedMs": 44.76,
+        "counters": {
+          "nodeLookup": {
+            "calls": 100,
+            "totalMs": 0.353,
+            "maxMs": 0.057
+          },
+          "sameTopology": {
+            "calls": 100,
+            "totalMs": 16.109,
+            "maxMs": 0.307
+          },
+          "wireNetworks": {
+            "calls": 100,
+            "totalMs": 16.733,
+            "maxMs": 0.316
+          },
+          "advanceTiming": {
+            "calls": 100,
+            "totalMs": 0.736,
+            "maxMs": 0.016
+          }
+        }
+      },
+      "skipIdleSolve": {
+        "elapsedMs": 43.628,
+        "counters": {
+          "nodeLookup": {
+            "calls": 100,
+            "totalMs": 0.272,
+            "maxMs": 0.006
+          },
+          "sameTopology": {
+            "calls": 100,
+            "totalMs": 15.401,
+            "maxMs": 0.443
+          },
+          "wireNetworks": {
+            "calls": 100,
+            "totalMs": 15.989,
+            "maxMs": 0.482
+          },
+          "advanceTiming": {
+            "calls": 100,
+            "totalMs": 0.69,
+            "maxMs": 0.018
+          }
+        }
+      },
+      "coldTopology": {
+        "elapsedMs": 59.389,
+        "counters": {
+          "nodeLookup": {
+            "calls": 1,
+            "totalMs": 0.004,
+            "maxMs": 0.004
+          },
+          "nodeBy": {
+            "calls": 964,
+            "totalMs": 0.389,
+            "maxMs": 0.03
+          },
+          "wireNetworks": {
+            "calls": 1,
+            "totalMs": 59.321,
+            "maxMs": 59.321
+          }
+        }
+      },
+      "coldDrawing": {
+        "elapsedMs": 48.116,
+        "counters": {
+          "nodeLookup": {
+            "calls": 1,
+            "totalMs": 0.005,
+            "maxMs": 0.005
+          },
+          "sameTopology": {
+            "calls": 1,
+            "totalMs": 0.153,
+            "maxMs": 0.153
+          },
+          "wireNetworks": {
+            "calls": 1,
+            "totalMs": 0.165,
+            "maxMs": 0.165
+          },
+          "nodeBy": {
+            "calls": 964,
+            "totalMs": 1.882,
+            "maxMs": 0.011
+          },
+          "wireDrawing": {
+            "calls": 1,
+            "totalMs": 47.89,
+            "maxMs": 47.89
+          }
+        }
+      },
+      "cachedDrawing": {
+        "elapsedMs": 22.912,
+        "counters": {
+          "nodeLookup": {
+            "calls": 100,
+            "totalMs": 0.388,
+            "maxMs": 0.008
+          },
+          "sameTopology": {
+            "calls": 100,
+            "totalMs": 21.89,
+            "maxMs": 0.405
+          },
+          "wireNetworks": {
+            "calls": 100,
+            "totalMs": 22.57,
+            "maxMs": 0.424
+          },
+          "wireDrawing": {
+            "calls": 100,
+            "totalMs": 0.128,
+            "maxMs": 0.055
+          }
+        }
+      },
+      "snapshot": {
+        "elapsedMs": 78.559,
+        "counters": {}
+      },
+      "serialization": {
+        "elapsedMs": 18.053,
+        "counters": {}
+      }
+    },
+    {
+      "expression": "DECIMAL_KEYPAD_DESIGNS[3]",
+      "nodes": 81,
+      "wires": 204,
+      "points": 1447,
+      "ports": 485,
+      "fallbackWires": 0,
+      "networks": 146,
+      "timingNodes": 0,
+      "modelBytes": 64293,
+      "timingBytes": 8100,
+      "initialSettleMs": 24.443,
+      "idle": {
+        "elapsedMs": 17.319,
+        "counters": {
+          "nodeLookup": {
+            "calls": 100,
+            "totalMs": 0.131,
+            "maxMs": 0.004
+          },
+          "sameTopology": {
+            "calls": 100,
+            "totalMs": 6.674,
+            "maxMs": 0.116
+          },
+          "wireNetworks": {
+            "calls": 100,
+            "totalMs": 7.018,
+            "maxMs": 0.122
+          },
+          "advanceTiming": {
+            "calls": 100,
+            "totalMs": 0.346,
+            "maxMs": 0.009
+          }
+        }
+      },
+      "skipIdleSolve": {
+        "elapsedMs": 16.92,
+        "counters": {
+          "nodeLookup": {
+            "calls": 100,
+            "totalMs": 0.13,
+            "maxMs": 0.002
+          },
+          "sameTopology": {
+            "calls": 100,
+            "totalMs": 6.707,
+            "maxMs": 0.096
+          },
+          "wireNetworks": {
+            "calls": 100,
+            "totalMs": 7.029,
+            "maxMs": 0.101
+          },
+          "advanceTiming": {
+            "calls": 100,
+            "totalMs": 0.357,
+            "maxMs": 0.011
+          }
+        }
+      },
+      "coldTopology": {
+        "elapsedMs": 22.698,
+        "counters": {
+          "nodeLookup": {
+            "calls": 1,
+            "totalMs": 0.002,
+            "maxMs": 0.002
+          },
+          "nodeBy": {
+            "calls": 394,
+            "totalMs": 0.122,
+            "maxMs": 0.001
+          },
+          "wireNetworks": {
+            "calls": 1,
+            "totalMs": 22.616,
+            "maxMs": 22.616
+          }
+        }
+      },
+      "coldDrawing": {
+        "elapsedMs": 16.243,
+        "counters": {
+          "nodeLookup": {
+            "calls": 1,
+            "totalMs": 0.004,
+            "maxMs": 0.004
+          },
+          "sameTopology": {
+            "calls": 1,
+            "totalMs": 0.059,
+            "maxMs": 0.059
+          },
+          "wireNetworks": {
+            "calls": 1,
+            "totalMs": 0.07,
+            "maxMs": 0.07
+          },
+          "nodeBy": {
+            "calls": 394,
+            "totalMs": 0.345,
+            "maxMs": 0.027
+          },
+          "wireDrawing": {
+            "calls": 1,
+            "totalMs": 16.097,
+            "maxMs": 16.097
+          }
+        }
+      },
+      "cachedDrawing": {
+        "elapsedMs": 7.57,
+        "counters": {
+          "nodeLookup": {
+            "calls": 100,
+            "totalMs": 0.139,
+            "maxMs": 0.004
+          },
+          "sameTopology": {
+            "calls": 100,
+            "totalMs": 6.936,
+            "maxMs": 0.137
+          },
+          "wireNetworks": {
+            "calls": 100,
+            "totalMs": 7.324,
+            "maxMs": 0.143
+          },
+          "wireDrawing": {
+            "calls": 100,
+            "totalMs": 0.069,
+            "maxMs": 0.004
+          }
+        }
+      },
+      "snapshot": {
+        "elapsedMs": 33.923,
+        "counters": {}
+      },
+      "serialization": {
+        "elapsedMs": 7.385,
+        "counters": {}
+      }
+    }
+  ],
+  "activeCalculator": {
+    "elapsedMs": 8702.096,
+    "counters": {
+      "nodeLookup": {
+        "calls": 46,
+        "totalMs": 0.608,
+        "maxMs": 0.114
+      },
+      "nodeBy": {
+        "calls": 5292,
+        "totalMs": 1.981,
+        "maxMs": 0.035
+      },
+      "wireNetworks": {
+        "calls": 2858,
+        "totalMs": 362.767,
+        "maxMs": 325.506
+      },
+      "networkSignals": {
+        "calls": 2356,
+        "totalMs": 3403.699,
+        "maxMs": 9.599
+      },
+      "resolveSignals": {
+        "calls": 456,
+        "totalMs": 8050.956,
+        "maxMs": 45.936
+      },
+      "settleTiming": {
+        "calls": 201,
+        "totalMs": 8267.222,
+        "maxMs": 105.948
+      },
+      "sameSignals": {
+        "calls": 1132,
+        "totalMs": 1.199,
+        "maxMs": 0.055
+      },
+      "sameTopology": {
+        "calls": 45,
+        "totalMs": 33.739,
+        "maxMs": 1.297
+      },
+      "advanceTiming": {
+        "calls": 24,
+        "totalMs": 6885.397,
+        "maxMs": 3117.934
+      }
+    }
+  }
+}

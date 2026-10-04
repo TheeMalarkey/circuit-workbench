@@ -1,0 +1,42 @@
+{
+  "scope": "Diagnosis only. Normal localhost:8781 project was read, not moved, reset or reloaded. No dist application changes were made.",
+  "livePreview": {"assetRevision":124,"project":"Decimal keypad to binary 0-999","parts":67,"svgPaths":764,"diagnosticModulePresent":false,"consoleErrors":[]},
+  "reproduction": "Isolated built-in decimal-keypad-3 copy on localhost:8783, 67 boards and 146 wires. The original onPointerMove handler moved one selected keypad board across 36 snapped positions. Four frames were warmup; 32 frame gaps were measured. Electrical simulation remained running. No user layout was modified.",
+  "fourEventsPerFrame": {
+    "frameMs":{"median":116.7,"p95":150,"max":150},
+    "handlerBatchMs":{"median":36.8,"p95":46.6,"max":88},
+    "pointerCalls":144,
+    "selectionRenderCalls":144,
+    "nodeRenderTotalMs":442.6,
+    "wireRenderTotalMs":614.2,
+    "wireGeometryCalls":36,
+    "wireGeometryTotalMs":186.5,
+    "simulationTotalMs":24.8
+  },
+  "oneEventPerFrame": {
+    "frameMs":{"median":66.7,"p95":99.9,"max":100},
+    "handlerBatchMs":{"median":17.4,"p95":22,"max":29.9},
+    "pointerCalls":36,
+    "selectionRenderCalls":36,
+    "nodeRenderTotalMs":174.3,
+    "wireRenderTotalMs":477.2,
+    "wireGeometryCalls":36,
+    "wireGeometryTotalMs":140.9,
+    "simulationTotalMs":18.5
+  },
+  "cause": [
+    "The board-drag branch synchronously calls renderSelection for each pointer event, including repeated events that remain in the same snapped grid cell.",
+    "renderSelection calls renderNodes, which visits all boards and their port controls, not only the moved board.",
+    "Each actual position change invalidates the network and wireDrawing cache. renderWires replaces the complete SVG wire DOM, including unchanged paths and hit targets.",
+    "These global redraws contribute substantial JavaScript and subsequent browser paint work; this is distinct from moving the camera transform.",
+    "The last reopening task did not change the code: app.js and app-explorer.js still have SHA256 C77B6585F30F5255DA0CC2AA1CBF9AF31828725F409979220A5725B3482EC8A8."
+  ],
+  "recommendedRepair": [
+    "Coalesce drag input to the latest position once per animation frame; flush the final position on pointerup and cancel pending callbacks on cancellation, undo or project changes.",
+    "Skip redraw when snapping or collision checking leaves geometry unchanged, while preserving occupied-space feedback.",
+    "Reconcile wire SVG elements and hit targets by actual geometry and appearance changes instead of replacing all children. Recompute required crossings and contacts without leaving stale electrical connectivity.",
+    "Retain simulation, collision rules, stacked-display contacts, group dragging, grid snapping, history, endpoints, bends and existing visual effects."
+  ],
+  "caveats": "These are short synthetic-handler samples, not a physical mouse latency test or a shipped improvement. Timings are nested and must not be summed. The built-in copy differs from the user's edited project. One event/frame lowers redundant work but remains slow, so coalescing alone is insufficient.",
+  "status": "Cause reproduced and repair identified; application fix not implemented in this diagnosis."
+}

@@ -1,0 +1,1 @@
+{"name":"Board clearance check","nodes":[{"id":"gate","type":"or","x":0,"y":0,"rotation":0}],"wires":[{"id":"edge","from":{"x":-96,"y":96},"to":{"x":192,"y":96},"points":[{"x":-96,"y":144},{"x":192,"y":144}],"style":"normal","color":"White"}]}

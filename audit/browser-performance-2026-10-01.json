@@ -1,0 +1,19 @@
+{
+  "scope": "Isolated in-app browser origin 127.0.0.1:8783; repeatable synthetic mouse pan and zoom; 24 warmup frames and 120 measured frames; no production changes",
+  "design": "calculator-9999",
+  "nodes": 1155,
+  "wires": 2605,
+  "domElements": 36683,
+  "svgPaths": 14531,
+  "shownPathsAtRest": {"back": 1105, "front": 423},
+  "samples": [
+    {"region":"back","mode":"pan","running":true,"wireFilters":true,"medianFrameMs":33.6,"p95FrameMs":116.7,"maxFrameMs":333.2,"medianCameraJsMs":0.1,"p95CameraJsMs":0.2,"framesOver33_5Ms":60,"simulationCalls":81,"simulationTotalMs":330.6},
+    {"region":"back","mode":"pan + zoom","running":true,"wireFilters":true,"medianFrameMs":33.4,"p95FrameMs":50.1,"maxFrameMs":66.7,"medianCameraJsMs":0.1,"p95CameraJsMs":0.2,"framesOver33_5Ms":53,"simulationCalls":89,"simulationTotalMs":616.3},
+    {"region":"back","mode":"pan","running":false,"wireFilters":true,"medianFrameMs":33.4,"p95FrameMs":50.0,"maxFrameMs":66.6,"medianCameraJsMs":0.1,"p95CameraJsMs":0.2,"framesOver33_5Ms":31},
+    {"region":"back","mode":"pan","running":false,"wireFilters":false,"medianFrameMs":116.6,"p95FrameMs":133.3,"maxFrameMs":150.1,"medianCameraJsMs":0.1,"p95CameraJsMs":0.2,"framesOver33_5Ms":120},
+    {"region":"back","mode":"pan repeat","running":true,"wireFilters":true,"medianFrameMs":49.9,"p95FrameMs":50.1,"maxFrameMs":66.6,"medianCameraJsMs":0.1,"p95CameraJsMs":0.2,"framesOver33_5Ms":63,"simulationCalls":87,"simulationTotalMs":643.2},
+    {"region":"front","mode":"pan","running":true,"wireFilters":true,"medianFrameMs":16.7,"p95FrameMs":16.8,"maxFrameMs":100.0,"medianCameraJsMs":0.1,"p95CameraJsMs":0.2,"framesOver33_5Ms":1,"simulationCalls":114,"simulationTotalMs":634.7},
+    {"region":"front","mode":"pan + zoom","running":true,"wireFilters":true,"medianFrameMs":16.7,"p95FrameMs":16.8,"maxFrameMs":166.6,"medianCameraJsMs":0.1,"p95CameraJsMs":0.2,"framesOver33_5Ms":1,"simulationCalls":115,"simulationTotalMs":661.3}
+  ],
+  "interpretation": "Camera-handler JavaScript is generally small. Dense-region frame times remain slow with simulation paused. Browser paint/compositing is implicated, but these measurements do not isolate a specific browser rendering stage. Removing wire filters was slower in this sample and does not support removing effects as a fix."
+}
